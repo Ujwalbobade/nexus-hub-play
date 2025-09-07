@@ -8,35 +8,57 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 220 27% 8%;
+    --foreground: 220 20% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 24% 12%;
+    --card-foreground: 220 20% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 24% 12%;
+    --popover-foreground: 220 20% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 193 100% 50%;
+    --primary-foreground: 220 27% 8%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 220 20% 85%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 20% 15%;
+    --muted-foreground: 220 15% 60%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 270 100% 70%;
+    --accent-foreground: 220 27% 8%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 220 20% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 20% 20%;
+    --input: 220 20% 18%;
+    --ring: 193 100% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Gaming theme colors */
+    --neon-blue: 193 100% 50%;
+    --neon-purple: 270 100% 70%;
+    --neon-cyan: 180 100% 50%;
+    --gaming-dark: 220 27% 8%;
+    --gaming-card: 220 24% 12%;
+    --gaming-surface: 220 20% 18%;
+    
+    /* Gradients */
+    --gradient-gaming: linear-gradient(135deg, hsl(193 100% 50% / 0.2), hsl(270 100% 70% / 0.2));
+    --gradient-neon: linear-gradient(90deg, hsl(193 100% 50%), hsl(270 100% 70%));
+    --gradient-card: linear-gradient(145deg, hsl(220 24% 12%), hsl(220 20% 15%));
+    
+    /* Shadows */
+    --shadow-neon: 0 0 20px hsl(193 100% 50% / 0.3);
+    --shadow-card: 0 8px 32px hsl(220 27% 8% / 0.6);
+    --shadow-hover: 0 12px 40px hsl(193 100% 50% / 0.2);
+
+    /* Animations */
+    --transition-gaming: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-glow: box-shadow 0.3s ease;
 
     --sidebar-background: 0 0% 98%;
 
