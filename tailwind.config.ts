@@ -57,13 +57,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Gaming theme colors
-        "neon-blue": "hsl(var(--neon-blue))",
-        "neon-purple": "hsl(var(--neon-purple))",
-        "neon-cyan": "hsl(var(--neon-cyan))",
-        "gaming-dark": "hsl(var(--gaming-dark))",
-        "gaming-card": "hsl(var(--gaming-card))",
-        "gaming-surface": "hsl(var(--gaming-surface))",
+        // PS5 Gaming theme colors
+        "ps5-blue": "hsl(var(--ps5-blue))",
+        "ps5-white": "hsl(var(--ps5-white))",
+        "ps5-black": "hsl(var(--ps5-black))",
+        "ps5-surface": "hsl(var(--ps5-surface))",
+        "ps5-card": "hsl(var(--ps5-card))",
+        "ps5-accent": "hsl(var(--ps5-accent))",
+        "ps5-secondary": "hsl(var(--ps5-secondary))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -111,6 +112,16 @@ export default {
             opacity: 0.7,
           },
         },
+        "fade-in": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(10px)"
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)"
+          }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -118,6 +129,7 @@ export default {
         "glow": "glow 2s ease-in-out infinite",
         "float": "float 3s ease-in-out infinite",
         "pulse-neon": "pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "fade-in": "fade-in 0.3s ease-out",
       },
     },
   },

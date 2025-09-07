@@ -38,27 +38,28 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Gaming theme colors */
-    --neon-blue: 193 100% 50%;
-    --neon-purple: 270 100% 70%;
-    --neon-cyan: 180 100% 50%;
-    --gaming-dark: 220 27% 8%;
-    --gaming-card: 220 24% 12%;
-    --gaming-surface: 220 20% 18%;
+    /* PS5 Gaming theme colors */
+    --ps5-blue: 0 112% 60%;
+    --ps5-white: 0 0% 95%;
+    --ps5-black: 220 25% 8%;
+    --ps5-surface: 220 20% 12%;
+    --ps5-card: 220 18% 15%;
+    --ps5-accent: 0 112% 60%;
+    --ps5-secondary: 220 15% 20%;
     
-    /* Gradients */
-    --gradient-gaming: linear-gradient(135deg, hsl(193 100% 50% / 0.2), hsl(270 100% 70% / 0.2));
-    --gradient-neon: linear-gradient(90deg, hsl(193 100% 50%), hsl(270 100% 70%));
-    --gradient-card: linear-gradient(145deg, hsl(220 24% 12%), hsl(220 20% 15%));
+    /* PS5 Gradients */
+    --gradient-ps5: linear-gradient(135deg, hsl(0 112% 60%), hsl(240 100% 70%));
+    --gradient-ps5-card: linear-gradient(145deg, hsl(220 18% 15%), hsl(220 15% 18%));
+    --gradient-ps5-surface: linear-gradient(180deg, hsl(220 20% 12%), hsl(220 25% 8%));
     
-    /* Shadows */
-    --shadow-neon: 0 0 20px hsl(193 100% 50% / 0.3);
-    --shadow-card: 0 8px 32px hsl(220 27% 8% / 0.6);
-    --shadow-hover: 0 12px 40px hsl(193 100% 50% / 0.2);
+    /* PS5 Shadows */
+    --shadow-ps5: 0 4px 20px hsl(0 0% 0% / 0.4);
+    --shadow-ps5-hover: 0 8px 30px hsl(0 112% 60% / 0.3);
+    --shadow-ps5-card: 0 2px 10px hsl(0 0% 0% / 0.2);
 
-    /* Animations */
-    --transition-gaming: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-glow: box-shadow 0.3s ease;
+    /* PS5 Animations */
+    --transition-ps5: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-ps5-slow: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
 
     --sidebar-background: 0 0% 98%;
 
