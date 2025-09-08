@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react"
 import { GameCarousel } from "@/components/ui/game-carousel"
 import { UserProfile } from "@/components/ui/user-profile"
-import { TimeTracker } from "@/components/ui/time-tracker"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { 
   Home, 
   Gamepad2, 
   User, 
-  Clock, 
+  Clock,
   Settings, 
   Search,
   Tv,
   Wifi,
   Volume2,
   Monitor,
-  Zap
+  Zap,
+  LogOut
 } from "lucide-react"
 
 interface User {
@@ -143,7 +144,6 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
     { id: "home", name: "Home", icon: Home },
     { id: "games", name: "Games", icon: Gamepad2 },
     { id: "profile", name: "Profile", icon: User },
-    { id: "tracker", name: "Time Tracker", icon: Clock },
   ]
 
   return (
@@ -203,14 +203,27 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
 
             {/* System Status & Profile */}
             <div className="flex items-center gap-6 text-ps5-white/70">
-              {/* User Profile Info */}
-              <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-ps5-accent to-blue-600 flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
+              {/* User Profile Info with Logout */}
+              <div className="relative group">
+                <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30 cursor-pointer">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-ps5-accent to-blue-600 flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="text-sm">
+                    <div className="text-ps5-white font-medium">{user.name}</div>
+                    <div className="text-ps5-white/50 text-xs">Level {user.level}</div>
+                  </div>
                 </div>
-                <div className="text-sm">
-                  <div className="text-ps5-white font-medium">{user.name}</div>
-                  <div className="text-ps5-white/50 text-xs">Level {user.level}</div>
+                
+                {/* Logout Dropdown */}
+                <div className="absolute right-0 top-full mt-2 w-48 bg-ps5-surface/95 backdrop-blur-md rounded-lg border border-ps5-secondary/30 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                  <button
+                    onClick={onLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-ps5-white/70 hover:text-ps5-white hover:bg-ps5-card/50 rounded-lg transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
                 </div>
               </div>
 
@@ -429,11 +442,6 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
           </div>
         )}
 
-        {activeTab === "tracker" && (
-          <div className="max-w-4xl mx-auto">
-            <TimeTracker onTimeUpdate={handleTimeUpdate} />
-          </div>
-        )}
       </main>
     </div>
   )
