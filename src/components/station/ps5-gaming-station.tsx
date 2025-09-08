@@ -48,6 +48,8 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   const [activeTab, setActiveTab] = useState("home")
   const [searchTerm, setSearchTerm] = useState("")
   const [platform, setPlatform] = useState<"pc" | "ps5">("ps5")
+  const [sessionTime, setSessionTime] = useState(0) // in minutes
+  const [timeLeft, setTimeLeft] = useState(120) // 2 hours in minutes
   const [user, setUser] = useState<User>({
     name: "Player One",
     email: "player@example.com",
@@ -57,6 +59,16 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
     achievements: 45,
     joinDate: "2024-01-15"
   })
+
+  // Session timer effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSessionTime(prev => prev + 1)
+      setTimeLeft(prev => Math.max(0, prev - 1))
+    }, 60000) // Update every minute
+
+    return () => clearInterval(timer)
+  }, [])
 
   const [pcGames] = useState<Game[]>([
     { id: 1, title: "Cyberpunk 2077", category: "RPG", playtime: 234, lastPlayed: "2 hours ago", isInstalled: true, progress: 65 },
@@ -87,15 +99,31 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   const allGames = platform === "pc" ? pcGames : ps5Games
 
   const getTopGames = () => {
-    return [...allGames].sort((a, b) => b.playtime - a.playtime).slice(0, 5)
+    const filtered = allGames.filter(game => 
+      searchTerm === "" || 
+      game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      game.category.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    return [...filtered].sort((a, b) => b.playtime - a.playtime).slice(0, 5)
   }
 
   const getRecentGames = () => {
-    return allGames.filter(game => game.lastPlayed).slice(0, 6)
+    const filtered = allGames.filter(game => 
+      game.lastPlayed && 
+      (searchTerm === "" || 
+       game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       game.category.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    return filtered.slice(0, 6)
   }
 
   const getInstalledGames = () => {
-    return allGames.filter(game => game.isInstalled)
+    return allGames.filter(game => 
+      game.isInstalled &&
+      (searchTerm === "" || 
+       game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       game.category.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
   }
 
   const handleGameSelect = (game: Game) => {
@@ -173,13 +201,48 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
               </div>
             </div>
 
-            {/* System Status */}
-            <div className="flex items-center gap-4 text-ps5-white/70">
+            {/* System Status & Profile */}
+            <div className="flex items-center gap-6 text-ps5-white/70">
+              {/* User Profile Info */}
+              <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-ps5-accent to-blue-600 flex items-center justify-center">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <div className="text-sm">
+                  <div className="text-ps5-white font-medium">{user.name}</div>
+                  <div className="text-ps5-white/50 text-xs">Level {user.level}</div>
+                </div>
+              </div>
+
+              {/* Session Timer */}
+              <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30">
+                <Clock className="w-4 h-4 text-ps5-accent" />
+                <div className="text-sm">
+                  <div className="text-ps5-white font-medium">
+                    {Math.floor(sessionTime / 60)}h {sessionTime % 60}m
+                  </div>
+                  <div className="text-ps5-white/50 text-xs">Session Time</div>
+                </div>
+              </div>
+
+              {/* Time Left */}
+              <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30">
+                <div className={`w-3 h-3 rounded-full ${timeLeft > 30 ? 'bg-green-400' : timeLeft > 10 ? 'bg-yellow-400' : 'bg-red-400'}`} />
+                <div className="text-sm">
+                  <div className="text-ps5-white font-medium">
+                    {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
+                  </div>
+                  <div className="text-ps5-white/50 text-xs">Time Left</div>
+                </div>
+              </div>
+
+              {/* System Icons */}
               <div className="flex items-center gap-2">
                 <Wifi className="w-4 h-4" />
                 <Volume2 className="w-4 h-4" />
                 <Tv className="w-4 h-4" />
               </div>
+              
               <div className="text-sm">
                 {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
@@ -291,10 +354,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 <GameCarousel
                   title="🎮 PC Games"
                   games={getInstalledGames().filter(game => 
-                    !["Launcher", "Tool", "Browser", "Communication"].includes(game.category) &&
-                    (searchTerm === "" || 
-                     game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                     game.category.toLowerCase().includes(searchTerm.toLowerCase()))
+                    !["Launcher", "Tool", "Browser", "Communication"].includes(game.category)
                   )}
                   onGameSelect={handleGameSelect}
                 />
@@ -303,9 +363,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 <GameCarousel
                   title="🚀 Game Launchers"
                   games={getInstalledGames().filter(game => 
-                    game.category === "Launcher" &&
-                    (searchTerm === "" || 
-                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                    game.category === "Launcher"
                   )}
                   onGameSelect={handleGameSelect}
                 />
@@ -314,9 +372,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 <GameCarousel
                   title="🔧 Tools & Applications"
                   games={getInstalledGames().filter(game => 
-                    ["Tool", "Browser", "Communication"].includes(game.category) &&
-                    (searchTerm === "" || 
-                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                    ["Tool", "Browser", "Communication"].includes(game.category)
                   )}
                   onGameSelect={handleGameSelect}
                 />
@@ -327,9 +383,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 <GameCarousel
                   title="🎮 Action Games"
                   games={getInstalledGames().filter(game => 
-                    ["Action", "Action RPG"].includes(game.category) &&
-                    (searchTerm === "" || 
-                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                    ["Action", "Action RPG"].includes(game.category)
                   )}
                   onGameSelect={handleGameSelect}
                 />
@@ -337,9 +391,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 <GameCarousel
                   title="🏁 Racing & Sports"
                   games={getInstalledGames().filter(game => 
-                    ["Racing", "Sports"].includes(game.category) &&
-                    (searchTerm === "" || 
-                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                    ["Racing", "Sports"].includes(game.category)
                   )}
                   onGameSelect={handleGameSelect}
                 />
@@ -347,9 +399,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 <GameCarousel
                   title="🎲 Other Games"
                   games={getInstalledGames().filter(game => 
-                    !["Action", "Action RPG", "Racing", "Sports"].includes(game.category) &&
-                    (searchTerm === "" || 
-                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                    !["Action", "Action RPG", "Racing", "Sports"].includes(game.category)
                   )}
                   onGameSelect={handleGameSelect}
                 />
