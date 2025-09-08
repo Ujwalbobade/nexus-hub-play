@@ -16,7 +16,8 @@ import {
   Volume2,
   Monitor,
   Zap,
-  LogOut
+  LogOut,
+  Palette
 } from "lucide-react"
 
 interface User {
@@ -49,6 +50,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   const [activeTab, setActiveTab] = useState("home")
   const [searchTerm, setSearchTerm] = useState("")
   const [platform, setPlatform] = useState<"pc" | "ps5">("ps5")
+  const [theme, setTheme] = useState<"dark" | "blue" | "purple">("dark")
   const [sessionTime, setSessionTime] = useState(0) // in minutes
   const [timeLeft, setTimeLeft] = useState(120) // 2 hours in minutes
   const [user, setUser] = useState<User>({
@@ -72,16 +74,21 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   }, [])
 
   const [pcGames] = useState<Game[]>([
-    { id: 1, title: "Cyberpunk 2077", category: "RPG", playtime: 234, lastPlayed: "2 hours ago", isInstalled: true, progress: 65 },
-    { id: 2, title: "Valorant", category: "FPS", playtime: 456, lastPlayed: "Yesterday", isInstalled: true, progress: 0 },
-    { id: 3, title: "League of Legends", category: "MOBA", playtime: 789, lastPlayed: "3 days ago", isInstalled: true, progress: 0 },
-    { id: 4, title: "Minecraft", category: "Sandbox", playtime: 123, lastPlayed: "1 week ago", isInstalled: true, progress: 0 },
-    { id: 5, title: "Counter-Strike 2", category: "FPS", playtime: 345, lastPlayed: "2 days ago", isInstalled: true, progress: 0 },
+    { id: 1, title: "Cyberpunk 2077", category: "Game", playtime: 234, lastPlayed: "2 hours ago", isInstalled: true, progress: 65 },
+    { id: 2, title: "Valorant", category: "Game", playtime: 456, lastPlayed: "Yesterday", isInstalled: true, progress: 0 },
+    { id: 3, title: "League of Legends", category: "Game", playtime: 789, lastPlayed: "3 days ago", isInstalled: true, progress: 0 },
+    { id: 4, title: "Minecraft", category: "Game", playtime: 123, lastPlayed: "1 week ago", isInstalled: true, progress: 0 },
+    { id: 5, title: "Counter-Strike 2", category: "Game", playtime: 345, lastPlayed: "2 days ago", isInstalled: true, progress: 0 },
     { id: 6, title: "Steam", category: "Launcher", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
     { id: 7, title: "Epic Games", category: "Launcher", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
-    { id: 8, title: "Discord", category: "Communication", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
-    { id: 9, title: "OBS Studio", category: "Tool", playtime: 45, lastPlayed: "1 week ago", isInstalled: true, progress: 0 },
-    { id: 10, title: "Chrome", category: "Browser", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 8, title: "Battle.net", category: "Launcher", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 9, title: "Chrome", category: "Browser", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 10, title: "Firefox", category: "Browser", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 11, title: "Edge", category: "Browser", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 12, title: "Discord", category: "Tool", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 13, title: "OBS Studio", category: "Tool", playtime: 45, lastPlayed: "1 week ago", isInstalled: true, progress: 0 },
+    { id: 14, title: "VS Code", category: "Tool", playtime: 120, lastPlayed: "Today", isInstalled: true, progress: 0 },
+    { id: 15, title: "Spotify", category: "Tool", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
   ])
 
   const [ps5Games] = useState<Game[]>([
@@ -146,8 +153,16 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
     { id: "profile", name: "Profile", icon: User },
   ]
 
+  const getThemeClasses = () => {
+    switch(theme) {
+      case "blue": return "from-blue-900 via-blue-800 to-slate-900"
+      case "purple": return "from-purple-900 via-purple-800 to-slate-900"
+      default: return "from-ps5-black via-ps5-surface to-ps5-card"
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ps5-black via-ps5-surface to-ps5-card">
+    <div className={`min-h-screen bg-gradient-to-br ${getThemeClasses()}`}>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-ps5-card/80 backdrop-blur-md border-b border-ps5-secondary/30">
         <div className="container mx-auto px-6 py-4">
@@ -201,8 +216,31 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
               </div>
             </div>
 
-            {/* System Status & Profile */}
-            <div className="flex items-center gap-6 text-ps5-white/70">
+              {/* System Status & Profile */}
+              <div className="flex items-center gap-6 text-ps5-white/70">
+                {/* Theme Switcher */}
+                <div className="relative group">
+                  <div className="flex items-center gap-2 bg-ps5-surface/50 rounded-lg px-3 py-2 border border-ps5-secondary/30 cursor-pointer">
+                    <Palette className="w-4 h-4 text-ps5-accent" />
+                    <span className="text-sm text-ps5-white capitalize">{theme}</span>
+                  </div>
+                  
+                  <div className="absolute right-0 top-full mt-2 w-32 bg-ps5-surface/95 backdrop-blur-md rounded-lg border border-ps5-secondary/30 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                    {["dark", "blue", "purple"].map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setTheme(t as "dark" | "blue" | "purple")}
+                        className={`w-full text-left px-3 py-2 text-sm capitalize transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                          theme === t 
+                            ? "text-ps5-accent bg-ps5-card/50" 
+                            : "text-ps5-white/70 hover:text-ps5-white hover:bg-ps5-card/30"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               {/* User Profile Info with Logout */}
               <div className="relative group">
                 <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30 cursor-pointer">
@@ -367,12 +405,12 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 <GameCarousel
                   title="🎮 PC Games"
                   games={getInstalledGames().filter(game => 
-                    !["Launcher", "Tool", "Browser", "Communication"].includes(game.category)
+                    game.category === "Game"
                   )}
                   onGameSelect={handleGameSelect}
                 />
 
-                {/* Launchers */}
+                {/* Game Launchers */}
                 <GameCarousel
                   title="🚀 Game Launchers"
                   games={getInstalledGames().filter(game => 
@@ -381,11 +419,20 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                   onGameSelect={handleGameSelect}
                 />
 
-                {/* Tools */}
+                {/* Browsers */}
+                <GameCarousel
+                  title="🌐 Web Browsers"
+                  games={getInstalledGames().filter(game => 
+                    game.category === "Browser"
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+
+                {/* Tools & Applications */}
                 <GameCarousel
                   title="🔧 Tools & Applications"
                   games={getInstalledGames().filter(game => 
-                    ["Tool", "Browser", "Communication"].includes(game.category)
+                    game.category === "Tool"
                   )}
                   onGameSelect={handleGameSelect}
                 />
