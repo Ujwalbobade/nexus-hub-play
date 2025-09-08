@@ -13,7 +13,9 @@ import {
   Search,
   Tv,
   Wifi,
-  Volume2
+  Volume2,
+  Monitor,
+  Zap
 } from "lucide-react"
 
 interface User {
@@ -45,6 +47,7 @@ interface PS5GamingStationProps {
 export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   const [activeTab, setActiveTab] = useState("home")
   const [searchTerm, setSearchTerm] = useState("")
+  const [platform, setPlatform] = useState<"pc" | "ps5">("ps5")
   const [user, setUser] = useState<User>({
     name: "Player One",
     email: "player@example.com",
@@ -55,18 +58,33 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
     joinDate: "2024-01-15"
   })
 
-  const [allGames] = useState<Game[]>([
+  const [pcGames] = useState<Game[]>([
     { id: 1, title: "Cyberpunk 2077", category: "RPG", playtime: 234, lastPlayed: "2 hours ago", isInstalled: true, progress: 65 },
     { id: 2, title: "Valorant", category: "FPS", playtime: 456, lastPlayed: "Yesterday", isInstalled: true, progress: 0 },
     { id: 3, title: "League of Legends", category: "MOBA", playtime: 789, lastPlayed: "3 days ago", isInstalled: true, progress: 0 },
     { id: 4, title: "Minecraft", category: "Sandbox", playtime: 123, lastPlayed: "1 week ago", isInstalled: true, progress: 0 },
     { id: 5, title: "Counter-Strike 2", category: "FPS", playtime: 345, lastPlayed: "2 days ago", isInstalled: true, progress: 0 },
-    { id: 6, title: "Apex Legends", category: "Battle Royale", playtime: 178, lastPlayed: "5 days ago", isInstalled: true, progress: 0 },
-    { id: 7, title: "GTA V", category: "Action", playtime: 567, lastPlayed: "1 month ago", isInstalled: false, progress: 45 },
-    { id: 8, title: "Fortnite", category: "Battle Royale", playtime: 89, lastPlayed: "2 weeks ago", isInstalled: true, progress: 0 },
-    { id: 9, title: "Rocket League", category: "Sports", playtime: 234, lastPlayed: "1 week ago", isInstalled: true, progress: 0 },
-    { id: 10, title: "Overwatch 2", category: "FPS", playtime: 456, lastPlayed: "3 days ago", isInstalled: true, progress: 0 },
+    { id: 6, title: "Steam", category: "Launcher", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 7, title: "Epic Games", category: "Launcher", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 8, title: "Discord", category: "Communication", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 9, title: "OBS Studio", category: "Tool", playtime: 45, lastPlayed: "1 week ago", isInstalled: true, progress: 0 },
+    { id: 10, title: "Chrome", category: "Browser", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
   ])
+
+  const [ps5Games] = useState<Game[]>([
+    { id: 1, title: "Spider-Man 2", category: "Action", playtime: 134, lastPlayed: "1 hour ago", isInstalled: true, progress: 75 },
+    { id: 2, title: "God of War Ragnarök", category: "Action RPG", playtime: 256, lastPlayed: "Yesterday", isInstalled: true, progress: 45 },
+    { id: 3, title: "Horizon Forbidden West", category: "Action RPG", playtime: 189, lastPlayed: "2 days ago", isInstalled: true, progress: 60 },
+    { id: 4, title: "The Last of Us Part II", category: "Action", playtime: 223, lastPlayed: "1 week ago", isInstalled: true, progress: 100 },
+    { id: 5, title: "Ratchet & Clank", category: "Platformer", playtime: 145, lastPlayed: "3 days ago", isInstalled: true, progress: 85 },
+    { id: 6, title: "Gran Turismo 7", category: "Racing", playtime: 78, lastPlayed: "5 days ago", isInstalled: true, progress: 30 },
+    { id: 7, title: "Demon's Souls", category: "Action RPG", playtime: 167, lastPlayed: "1 month ago", isInstalled: false, progress: 45 },
+    { id: 8, title: "Returnal", category: "Roguelike", playtime: 89, lastPlayed: "2 weeks ago", isInstalled: true, progress: 25 },
+    { id: 9, title: "Ghost of Tsushima", category: "Action", playtime: 234, lastPlayed: "1 week ago", isInstalled: true, progress: 95 },
+    { id: 10, title: "Bloodborne", category: "Action RPG", playtime: 156, lastPlayed: "3 days ago", isInstalled: true, progress: 70 },
+  ])
+
+  const allGames = platform === "pc" ? pcGames : ps5Games
 
   const getTopGames = () => {
     return [...allGames].sort((a, b) => b.playtime - a.playtime).slice(0, 5)
@@ -106,12 +124,40 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
       <header className="sticky top-0 z-50 bg-ps5-card/80 backdrop-blur-md border-b border-ps5-secondary/30">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-ps5-accent to-blue-600 shadow-lg">
-                <Gamepad2 className="w-6 h-6 text-white" />
+            {/* Logo & Platform Switcher */}
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-ps5-accent to-blue-600 shadow-lg">
+                  <Gamepad2 className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-xl font-bold text-ps5-white">Gaming Station</h1>
               </div>
-              <h1 className="text-xl font-bold text-ps5-white">Gaming Station</h1>
+              
+              {/* Platform Switch */}
+              <div className="flex items-center gap-2 bg-ps5-surface/50 rounded-lg p-1 border border-ps5-secondary/30">
+                <button
+                  onClick={() => setPlatform("pc")}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                    platform === "pc"
+                      ? "bg-ps5-accent text-white shadow-lg"
+                      : "text-ps5-white/70 hover:text-ps5-white hover:bg-ps5-surface/50"
+                  }`}
+                >
+                  <Monitor className="w-4 h-4" />
+                  PC
+                </button>
+                <button
+                  onClick={() => setPlatform("ps5")}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                    platform === "ps5"
+                      ? "bg-ps5-accent text-white shadow-lg"
+                      : "text-ps5-white/70 hover:text-ps5-white hover:bg-ps5-surface/50"
+                  }`}
+                >
+                  <Zap className="w-4 h-4" />
+                  PS5
+                </button>
+              </div>
             </div>
 
             {/* Search */}
@@ -178,7 +224,9 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                   <h2 className="text-3xl font-bold text-ps5-white mb-2">
                     Welcome back, {user.name}!
                   </h2>
-                  <p className="text-ps5-white/70">Ready to continue your gaming adventure?</p>
+                  <p className="text-ps5-white/70">
+                    Ready to continue your {platform === "pc" ? "PC" : "PS5"} gaming adventure?
+                  </p>
                 </div>
                 <div className="text-right text-ps5-white/70">
                   <div className="text-2xl font-bold text-ps5-accent">
@@ -191,7 +239,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
 
             {/* Top 5 Most Played */}
             <GameCarousel
-              title="🏆 Most Played Games"
+              title={`🏆 Top ${platform.toUpperCase()} Games`}
               games={getTopGames()}
               onGameSelect={handleGameSelect}
             />
@@ -202,21 +250,115 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
               games={getRecentGames()}
               onGameSelect={handleGameSelect}
             />
+
+            {platform === "pc" && (
+              <>
+                {/* PC Tools & Launchers */}
+                <GameCarousel
+                  title="🚀 Launchers & Tools"
+                  games={allGames.filter(game => 
+                    game.category === "Launcher" || 
+                    game.category === "Tool" || 
+                    game.category === "Browser" ||
+                    game.category === "Communication"
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+              </>
+            )}
+
+            {platform === "ps5" && (
+              <>
+                {/* PS5 Exclusives */}
+                <GameCarousel
+                  title="🎮 PlayStation Exclusives"
+                  games={allGames.filter(game => 
+                    ["Spider-Man 2", "God of War Ragnarök", "Horizon Forbidden West", "Ratchet & Clank"].includes(game.title)
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+              </>
+            )}
           </div>
         )}
 
         {activeTab === "games" && (
           <div className="space-y-12">
-            {/* Installed Games */}
-            <GameCarousel
-              title="📥 Installed Games"
-              games={getInstalledGames()}
-              onGameSelect={handleGameSelect}
-            />
+            {/* Platform-specific categories */}
+            {platform === "pc" ? (
+              <>
+                {/* PC Games */}
+                <GameCarousel
+                  title="🎮 PC Games"
+                  games={getInstalledGames().filter(game => 
+                    !["Launcher", "Tool", "Browser", "Communication"].includes(game.category) &&
+                    (searchTerm === "" || 
+                     game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                     game.category.toLowerCase().includes(searchTerm.toLowerCase()))
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+
+                {/* Launchers */}
+                <GameCarousel
+                  title="🚀 Game Launchers"
+                  games={getInstalledGames().filter(game => 
+                    game.category === "Launcher" &&
+                    (searchTerm === "" || 
+                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+
+                {/* Tools */}
+                <GameCarousel
+                  title="🔧 Tools & Applications"
+                  games={getInstalledGames().filter(game => 
+                    ["Tool", "Browser", "Communication"].includes(game.category) &&
+                    (searchTerm === "" || 
+                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+              </>
+            ) : (
+              <>
+                {/* PS5 Games by Category */}
+                <GameCarousel
+                  title="🎮 Action Games"
+                  games={getInstalledGames().filter(game => 
+                    ["Action", "Action RPG"].includes(game.category) &&
+                    (searchTerm === "" || 
+                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+
+                <GameCarousel
+                  title="🏁 Racing & Sports"
+                  games={getInstalledGames().filter(game => 
+                    ["Racing", "Sports"].includes(game.category) &&
+                    (searchTerm === "" || 
+                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+
+                <GameCarousel
+                  title="🎲 Other Games"
+                  games={getInstalledGames().filter(game => 
+                    !["Action", "Action RPG", "Racing", "Sports"].includes(game.category) &&
+                    (searchTerm === "" || 
+                     game.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                  )}
+                  onGameSelect={handleGameSelect}
+                />
+              </>
+            )}
 
             {/* All Games */}
             <GameCarousel
-              title="🎮 All Games"
+              title={`📥 All ${platform.toUpperCase()} ${platform === "pc" ? "Software" : "Games"}`}
               games={allGames.filter(game => 
                 searchTerm === "" || 
                 game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
