@@ -17,8 +17,14 @@ import {
   Monitor,
   Zap,
   LogOut,
-  Palette
+  Palette,
+  X,
+  Trophy,
+  ChevronDown
 } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 interface User {
   name: string
@@ -48,7 +54,7 @@ interface PS5GamingStationProps {
 
 export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   const [activeTab, setActiveTab] = useState("home")
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
   const [platform, setPlatform] = useState<"pc" | "ps5">("ps5")
   const [theme, setTheme] = useState<"dark" | "blue" | "purple">("dark")
   const [sessionTime, setSessionTime] = useState(0) // in minutes
@@ -108,9 +114,9 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
 
   const getTopGames = () => {
     const filtered = allGames.filter(game => 
-      searchTerm === "" || 
-      game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      game.category.toLowerCase().includes(searchTerm.toLowerCase())
+      searchQuery === "" || 
+      game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.category.toLowerCase().includes(searchQuery.toLowerCase())
     )
     return [...filtered].sort((a, b) => b.playtime - a.playtime).slice(0, 5)
   }
@@ -118,9 +124,9 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   const getRecentGames = () => {
     const filtered = allGames.filter(game => 
       game.lastPlayed && 
-      (searchTerm === "" || 
-       game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       game.category.toLowerCase().includes(searchTerm.toLowerCase()))
+      (searchQuery === "" || 
+       game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+       game.category.toLowerCase().includes(searchQuery.toLowerCase()))
     )
     return filtered.slice(0, 6)
   }
@@ -128,9 +134,9 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   const getInstalledGames = () => {
     return allGames.filter(game => 
       game.isInstalled &&
-      (searchTerm === "" || 
-       game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       game.category.toLowerCase().includes(searchTerm.toLowerCase()))
+      (searchQuery === "" || 
+       game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+       game.category.toLowerCase().includes(searchQuery.toLowerCase()))
     )
   }
 
@@ -162,160 +168,220 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${getThemeClasses()}`}>
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-ps5-card/80 backdrop-blur-md border-b border-ps5-secondary/30">
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
+      {/* Clean Header */}
+      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo & Platform Switcher */}
+            {/* Brand & Platform */}
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-ps5-accent to-blue-600 shadow-lg">
-                  <Gamepad2 className="w-6 h-6 text-white" />
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-primary shadow-lg">
+                  <Gamepad2 className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h1 className="text-xl font-bold text-ps5-white">Gaming Station</h1>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Gaming Station</h1>
+                  <p className="text-sm text-muted-foreground">Premium Gaming Experience</p>
+                </div>
               </div>
               
-              {/* Platform Switch */}
-              <div className="flex items-center gap-2 bg-ps5-surface/50 rounded-lg p-1 border border-ps5-secondary/30">
+              {/* Clean Platform Switch */}
+              <div className="flex items-center bg-muted rounded-lg p-1 border border-border">
                 <button
                   onClick={() => setPlatform("pc")}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     platform === "pc"
-                      ? "bg-ps5-accent text-white shadow-lg"
-                      : "text-ps5-white/70 hover:text-ps5-white hover:bg-ps5-surface/50"
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background"
                   }`}
                 >
                   <Monitor className="w-4 h-4" />
-                  PC
+                  PC Mode
                 </button>
                 <button
                   onClick={() => setPlatform("ps5")}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     platform === "ps5"
-                      ? "bg-ps5-accent text-white shadow-lg"
-                      : "text-ps5-white/70 hover:text-ps5-white hover:bg-ps5-surface/50"
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background"
                   }`}
                 >
                   <Zap className="w-4 h-4" />
-                  PS5
+                  PS5 Mode
                 </button>
               </div>
             </div>
 
-            {/* Search */}
-            <div className="flex-1 max-w-md mx-8">
+            {/* Enhanced Search */}
+            <div className="flex-1 max-w-lg mx-8">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4" />
-                <Input
-                  placeholder="Search games..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent"
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search games, apps, tools..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
 
-              {/* System Status & Profile */}
-              <div className="flex items-center gap-6 text-ps5-white/70">
-                {/* Theme Switcher */}
-                <div className="relative group">
-                  <div className="flex items-center gap-2 bg-ps5-surface/50 rounded-lg px-3 py-2 border border-ps5-secondary/30 cursor-pointer">
-                    <Palette className="w-4 h-4 text-ps5-accent" />
-                    <span className="text-sm text-ps5-white capitalize">{theme}</span>
-                  </div>
-                  
-                  <div className="absolute right-0 top-full mt-2 w-32 bg-ps5-surface/95 backdrop-blur-md rounded-lg border border-ps5-secondary/30 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
-                    {["dark", "blue", "purple"].map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => setTheme(t as "dark" | "blue" | "purple")}
-                        className={`w-full text-left px-3 py-2 text-sm capitalize transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                          theme === t 
-                            ? "text-ps5-accent bg-ps5-card/50" 
-                            : "text-ps5-white/70 hover:text-ps5-white hover:bg-ps5-card/30"
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              {/* User Profile Info with Logout */}
-              <div className="relative group">
-                <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30 cursor-pointer">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-ps5-accent to-blue-600 flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="text-sm">
-                    <div className="text-ps5-white font-medium">{user.name}</div>
-                    <div className="text-ps5-white/50 text-xs">Level {user.level}</div>
-                  </div>
-                </div>
-                
-                {/* Logout Dropdown */}
-                <div className="absolute right-0 top-full mt-2 w-48 bg-ps5-surface/95 backdrop-blur-md rounded-lg border border-ps5-secondary/30 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
-                  <button
-                    onClick={onLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-ps5-white/70 hover:text-ps5-white hover:bg-ps5-card/50 rounded-lg transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
-                  </button>
-                </div>
-              </div>
-
-              {/* Session Timer */}
-              <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30">
-                <Clock className="w-4 h-4 text-ps5-accent" />
-                <div className="text-sm">
-                  <div className="text-ps5-white font-medium">
+            {/* User Actions & Info */}
+            <div className="flex items-center gap-4">
+              {/* Session & Time Info */}
+              <div className="hidden lg:flex items-center gap-4 bg-muted rounded-lg px-4 py-2 border border-border">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-foreground">
                     {Math.floor(sessionTime / 60)}h {sessionTime % 60}m
                   </div>
-                  <div className="text-ps5-white/50 text-xs">Session Time</div>
+                  <div className="text-xs text-muted-foreground">Session</div>
                 </div>
-              </div>
-
-              {/* Time Left */}
-              <div className="flex items-center gap-3 bg-ps5-surface/50 rounded-lg px-4 py-2 border border-ps5-secondary/30">
-                <div className={`w-3 h-3 rounded-full ${timeLeft > 30 ? 'bg-green-400' : timeLeft > 10 ? 'bg-yellow-400' : 'bg-red-400'}`} />
-                <div className="text-sm">
-                  <div className="text-ps5-white font-medium">
+                <div className="w-px h-8 bg-border" />
+                <div className="text-center">
+                  <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-green-600' : timeLeft > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
                     {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
                   </div>
-                  <div className="text-ps5-white/50 text-xs">Time Left</div>
+                  <div className="text-xs text-muted-foreground">Remaining</div>
                 </div>
               </div>
 
-              {/* System Icons */}
-              <div className="flex items-center gap-2">
-                <Wifi className="w-4 h-4" />
-                <Volume2 className="w-4 h-4" />
-                <Tv className="w-4 h-4" />
-              </div>
-              
-              <div className="text-sm">
-                {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </div>
+              {/* Theme Selector */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="hover:bg-muted">
+                    <Palette className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => setTheme('dark')}>
+                    <div className="w-3 h-3 rounded-full bg-slate-900 mr-3" />
+                    Dark Theme
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme('blue')}>
+                    <div className="w-3 h-3 rounded-full bg-blue-600 mr-3" />
+                    PS5 Blue
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme('purple')}>
+                    <div className="w-3 h-3 rounded-full bg-purple-600 mr-3" />
+                    Purple Neon
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Enhanced Profile Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-3 px-3 py-2 h-auto hover:bg-muted">
+                    <Avatar className="w-10 h-10 border-2 border-primary">
+                      <AvatarImage src="/placeholder.svg" alt="User" />
+                      <AvatarFallback className="bg-primary text-primary-foreground font-bold">
+                        {user.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left hidden md:block">
+                      <div className="text-sm font-semibold text-foreground">{user.name}</div>
+                      <div className="text-xs text-muted-foreground">Level {user.level} • {user.email}</div>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                  {/* Profile Header */}
+                  <div className="p-4 border-b border-border">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="w-16 h-16 border-2 border-primary">
+                        <AvatarImage src="/placeholder.svg" alt="User" />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
+                          {user.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-foreground text-lg">{user.name}</h3>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="secondary" className="text-xs font-medium">
+                            Level {user.level}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Premium Member
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Quick Stats */}
+                  <div className="p-4 border-b border-border">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="space-y-1">
+                        <div className="text-2xl font-bold text-foreground">
+                          {Math.floor(user.totalPlaytime / 60)}h
+                        </div>
+                        <div className="text-xs text-muted-foreground">Total Play</div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-2xl font-bold text-primary">{user.gamesPlayed}</div>
+                        <div className="text-xs text-muted-foreground">Games</div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-2xl font-bold text-foreground">{user.achievements}</div>
+                        <div className="text-xs text-muted-foreground">Achievements</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Menu Items */}
+                  <div className="p-2">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <User className="w-4 h-4 mr-3" />
+                      View Full Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Trophy className="w-4 h-4 mr-3" />
+                      Achievements & Stats
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Settings className="w-4 h-4 mr-3" />
+                      Settings & Preferences
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={onLogout}
+                      className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                    >
+                      <LogOut className="w-4 h-4 mr-3" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Navigation */}
-      <nav className="bg-ps5-surface/50 border-b border-ps5-secondary/20">
+      {/* Clean Navigation */}
+      <nav className="bg-muted/50 border-b border-border">
         <div className="container mx-auto px-6">
-          <div className="flex space-x-8">
+          <div className="flex space-x-2">
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-4 text-sm font-medium border-b-2 transition-colors ${
+                  className={`flex items-center gap-2 px-6 py-4 text-sm font-medium rounded-t-lg transition-all ${
                     activeTab === tab.id
-                      ? "border-ps5-accent text-ps5-accent"
-                      : "border-transparent text-ps5-white/70 hover:text-ps5-white hover:border-ps5-white/30"
+                      ? "bg-background text-primary border-b-2 border-primary shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -470,9 +536,9 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
             <GameCarousel
               title={`📥 All ${platform.toUpperCase()} ${platform === "pc" ? "Software" : "Games"}`}
               games={allGames.filter(game => 
-                searchTerm === "" || 
-                game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                game.category.toLowerCase().includes(searchTerm.toLowerCase())
+                searchQuery === "" || 
+                game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                game.category.toLowerCase().includes(searchQuery.toLowerCase())
               )}
               onGameSelect={handleGameSelect}
             />
