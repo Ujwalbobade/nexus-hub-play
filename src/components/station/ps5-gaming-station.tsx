@@ -236,20 +236,13 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
 
             {/* User Actions & Info */}
             <div className="flex items-center gap-4">
-              {/* Session & Time Info */}
-              <div className="hidden lg:flex items-center gap-4 bg-muted rounded-lg px-4 py-2 border border-border">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-foreground">
-                    {Math.floor(sessionTime / 60)}h {sessionTime % 60}m
-                  </div>
-                  <div className="text-xs text-muted-foreground">Session</div>
-                </div>
-                <div className="w-px h-8 bg-border" />
+              {/* Time Remaining Info */}
+              <div className="hidden lg:flex items-center bg-muted rounded-lg px-4 py-2 border border-border">
                 <div className="text-center">
                   <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-green-600' : timeLeft > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
                     {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
                   </div>
-                  <div className="text-xs text-muted-foreground">Remaining</div>
+                  <div className="text-xs text-muted-foreground">Time Remaining</div>
                 </div>
               </div>
 
@@ -368,23 +361,31 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
         </div>
       </header>
 
-      {/* Clean Navigation */}
+      {/* Controller-Friendly Navigation for PS5 Mode */}
       <nav className="bg-muted/50 border-b border-border">
         <div className="container mx-auto px-6">
-          <div className="flex space-x-2">
+          <div className={platform === "ps5" ? "flex justify-center space-x-6" : "flex space-x-2"}>
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-6 py-4 text-sm font-medium rounded-t-lg transition-all ${
-                    activeTab === tab.id
-                      ? "bg-background text-primary border-b-2 border-primary shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  className={`flex items-center gap-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+                    platform === "ps5" 
+                      ? `px-8 py-6 text-lg font-bold rounded-xl ${
+                          activeTab === tab.id
+                            ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                            : "text-muted-foreground hover:text-foreground hover:bg-background/50 hover:scale-105"
+                        }`
+                      : `px-6 py-4 text-sm font-medium rounded-t-lg ${
+                          activeTab === tab.id
+                            ? "bg-background text-primary border-b-2 border-primary shadow-sm"
+                            : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                        }`
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className={platform === "ps5" ? "w-6 h-6" : "w-4 h-4"} />
                   {tab.name}
                 </button>
               )
@@ -422,6 +423,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
               title={`🏆 Top ${platform.toUpperCase()} Games`}
               games={getTopGames()}
               onGameSelect={handleGameSelect}
+              platform={platform}
             />
 
             {/* Recently Played */}
@@ -429,6 +431,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
               title="⏱️ Continue Playing"
               games={getRecentGames()}
               onGameSelect={handleGameSelect}
+              platform={platform}
             />
 
             {platform === "pc" && (
@@ -443,6 +446,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     game.category === "Communication"
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
               </>
             )}
@@ -456,6 +460,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     ["Spider-Man 2", "God of War Ragnarök", "Horizon Forbidden West", "Ratchet & Clank"].includes(game.title)
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
               </>
             )}
@@ -474,6 +479,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     game.category === "Game"
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
 
                 {/* Game Launchers */}
@@ -483,6 +489,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     game.category === "Launcher"
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
 
                 {/* Browsers */}
@@ -492,6 +499,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     game.category === "Browser"
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
 
                 {/* Tools & Applications */}
@@ -501,6 +509,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     game.category === "Tool"
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
               </>
             ) : (
@@ -512,6 +521,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     ["Action", "Action RPG"].includes(game.category)
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
 
                 <GameCarousel
@@ -520,6 +530,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     ["Racing", "Sports"].includes(game.category)
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
 
                 <GameCarousel
@@ -528,6 +539,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                     !["Action", "Action RPG", "Racing", "Sports"].includes(game.category)
                   )}
                   onGameSelect={handleGameSelect}
+                  platform={platform}
                 />
               </>
             )}
@@ -541,6 +553,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 game.category.toLowerCase().includes(searchQuery.toLowerCase())
               )}
               onGameSelect={handleGameSelect}
+              platform={platform}
             />
           </div>
         )}

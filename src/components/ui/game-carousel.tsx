@@ -19,11 +19,12 @@ interface GameCarouselProps {
   title: string
   games: Game[]
   onGameSelect?: (game: Game) => void
+  platform?: "pc" | "ps5"
 }
 
-export function GameCarousel({ title, games, onGameSelect }: GameCarouselProps) {
+export function GameCarousel({ title, games, onGameSelect, platform = "pc" }: GameCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const itemsPerView = 4
+  const itemsPerView = platform === "ps5" ? 3 : 4 // Fewer items for PS5 mode for better controller navigation
 
   const nextSlide = () => {
     setCurrentIndex((prev) => 
@@ -50,25 +51,31 @@ export function GameCarousel({ title, games, onGameSelect }: GameCarouselProps) 
     <div className="space-y-4">
       {/* Section Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-ps5-white">{title}</h2>
+        <h2 className={`font-bold text-foreground ${platform === "ps5" ? "text-3xl" : "text-2xl"}`}>{title}</h2>
         <div className="flex gap-2">
           <Button
             variant="ghost"
-            size="icon"
+            size={platform === "ps5" ? "lg" : "icon"}
             onClick={prevSlide}
             disabled={currentIndex === 0}
-            className="text-ps5-white hover:bg-ps5-surface"
+            className={`text-foreground hover:bg-muted focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+              platform === "ps5" ? "px-6 py-3" : ""
+            }`}
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className={platform === "ps5" ? "w-6 h-6" : "w-5 h-5"} />
+            {platform === "ps5" && <span className="ml-2">Previous</span>}
           </Button>
           <Button
             variant="ghost"
-            size="icon"
+            size={platform === "ps5" ? "lg" : "icon"}
             onClick={nextSlide}
             disabled={currentIndex + itemsPerView >= games.length}
-            className="text-ps5-white hover:bg-ps5-surface"
+            className={`text-foreground hover:bg-muted focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+              platform === "ps5" ? "px-6 py-3" : ""
+            }`}
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className={platform === "ps5" ? "w-6 h-6" : "w-5 h-5"} />
+            {platform === "ps5" && <span className="ml-2">Next</span>}
           </Button>
         </div>
       </div>
@@ -89,15 +96,28 @@ export function GameCarousel({ title, games, onGameSelect }: GameCarouselProps) 
             >
               <Card
                 className={cn(
-                  "group cursor-pointer transition-all duration-200 hover:scale-105",
-                  "bg-ps5-card border-ps5-secondary/30 hover:border-ps5-accent/50",
-                  "overflow-hidden h-72",
-                  "hover:shadow-[0_8px_30px_hsl(0_112%_60%_/_0.3)]"
+                  "group cursor-pointer transition-all duration-200",
+                  platform === "ps5" 
+                    ? "hover:scale-110 focus-within:scale-110 focus-within:ring-4 focus-within:ring-primary/30 h-80" // Larger cards for PS5
+                    : "hover:scale-105 h-72",
+                  "bg-card border-border hover:border-primary/50",
+                  "overflow-hidden",
+                  "hover:shadow-[0_8px_30px_hsl(var(--primary)_/_0.3)]",
+                  "focus:outline-none focus:ring-4 focus:ring-primary/30"
                 )}
                 onClick={() => onGameSelect?.(game)}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onGameSelect?.(game)
+                  }
+                }}
               >
                 {/* Game Image/Cover */}
-                <div className="relative h-48 bg-gradient-to-br from-ps5-surface to-ps5-secondary overflow-hidden">
+                <div className={`relative bg-gradient-to-br from-muted to-muted-foreground/20 overflow-hidden ${
+                  platform === "ps5" ? "h-56" : "h-48"
+                }`}>
                   {game.image ? (
                     <img
                       src={game.image}
@@ -106,15 +126,18 @@ export function GameCarousel({ title, games, onGameSelect }: GameCarouselProps) 
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Play className="w-12 h-12 text-ps5-accent opacity-50" />
+                      <Play className={`text-primary opacity-50 ${platform === "ps5" ? "w-16 h-16" : "w-12 h-12"}`} />
                     </div>
                   )}
                   
                   {/* Overlay on Hover */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                    <Button size="sm" className="bg-ps5-accent hover:bg-ps5-accent/90 text-white">
-                      <Play className="w-4 h-4 mr-2" />
-                      Play
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <Button 
+                      size={platform === "ps5" ? "lg" : "sm"} 
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-4 focus:ring-primary/30"
+                    >
+                      <Play className={platform === "ps5" ? "w-6 h-6 mr-3" : "w-4 h-4 mr-2"} />
+                      {platform === "ps5" ? "Launch Game" : "Play"}
                     </Button>
                   </div>
 
@@ -122,7 +145,7 @@ export function GameCarousel({ title, games, onGameSelect }: GameCarouselProps) 
                   {game.progress && game.progress > 0 && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
                       <div 
-                        className="h-full bg-ps5-accent transition-all duration-300"
+                        className="h-full bg-primary transition-all duration-300"
                         style={{ width: `${game.progress}%` }}
                       />
                     </div>
@@ -138,13 +161,17 @@ export function GameCarousel({ title, games, onGameSelect }: GameCarouselProps) 
                 </div>
 
                 {/* Game Info */}
-                <div className="p-4 space-y-2">
-                  <h3 className="font-medium text-ps5-white line-clamp-1 group-hover:text-ps5-accent transition-colors">
+                <div className={`space-y-2 ${platform === "ps5" ? "p-6" : "p-4"}`}>
+                  <h3 className={`font-medium text-foreground line-clamp-1 group-hover:text-primary transition-colors ${
+                    platform === "ps5" ? "text-lg" : "text-base"
+                  }`}>
                     {game.title}
                   </h3>
                   
-                  <div className="flex items-center justify-between text-sm text-ps5-white/70">
-                    <span className="bg-ps5-surface px-2 py-1 rounded text-xs">
+                  <div className={`flex items-center justify-between text-muted-foreground ${
+                    platform === "ps5" ? "text-base" : "text-sm"
+                  }`}>
+                    <span className="bg-muted px-2 py-1 rounded text-xs">
                       {game.category}
                     </span>
                     
@@ -157,7 +184,7 @@ export function GameCarousel({ title, games, onGameSelect }: GameCarouselProps) 
                   </div>
 
                   {game.lastPlayed && (
-                    <div className="text-xs text-ps5-white/50">
+                    <div className={`text-muted-foreground/70 ${platform === "ps5" ? "text-sm" : "text-xs"}`}>
                       Last played: {game.lastPlayed}
                     </div>
                   )}
