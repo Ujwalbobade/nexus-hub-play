@@ -157,6 +157,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
     { id: "home", name: "Home", icon: Home },
     { id: "games", name: "Games", icon: Gamepad2 },
     { id: "profile", name: "Profile", icon: User },
+    { id: "settings", name: "Settings", icon: Settings },
   ]
 
   const getThemeClasses = () => {
@@ -246,29 +247,6 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 </div>
               </div>
 
-              {/* Theme Selector */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hover:bg-muted">
-                    <Palette className="w-5 h-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => setTheme('dark')}>
-                    <div className="w-3 h-3 rounded-full bg-slate-900 mr-3" />
-                    Dark Theme
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('blue')}>
-                    <div className="w-3 h-3 rounded-full bg-blue-600 mr-3" />
-                    PS5 Blue
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('purple')}>
-                    <div className="w-3 h-3 rounded-full bg-purple-600 mr-3" />
-                    Purple Neon
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
               {/* Enhanced Profile Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -341,7 +319,10 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                       <Trophy className="w-4 h-4 mr-3" />
                       Achievements & Stats
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
+                    <DropdownMenuItem 
+                      onClick={() => setActiveTab('settings')}
+                      className="cursor-pointer"
+                    >
                       <Settings className="w-4 h-4 mr-3" />
                       Settings & Preferences
                     </DropdownMenuItem>
@@ -563,8 +544,149 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
             <UserProfile
               user={user}
               onLogout={onLogout}
-              onSettings={() => console.log("Settings clicked")}
+              onSettings={() => setActiveTab('settings')}
             />
+          </div>
+        )}
+
+        {activeTab === "settings" && (
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-foreground mb-2">Settings & Preferences</h2>
+              <p className="text-muted-foreground">Customize your gaming experience</p>
+            </div>
+
+            {/* Theme Preferences */}
+            <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Palette className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-foreground">Theme Preferences</h3>
+                  <p className="text-sm text-muted-foreground">Choose your preferred color theme</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  onClick={() => setTheme('dark')}
+                  className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+                    theme === 'dark' 
+                      ? 'border-primary bg-primary/5 shadow-lg scale-105' 
+                      : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-900 to-slate-700 border-4 border-white/20 shadow-lg" />
+                    <div className="text-center">
+                      <h4 className="font-semibold text-foreground">Dark Theme</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Classic dark gaming mode</p>
+                    </div>
+                    {theme === 'dark' && (
+                      <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setTheme('blue')}
+                  className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+                    theme === 'blue' 
+                      ? 'border-primary bg-primary/5 shadow-lg scale-105' 
+                      : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-900 to-blue-600 border-4 border-blue-300/30 shadow-lg" />
+                    <div className="text-center">
+                      <h4 className="font-semibold text-foreground">PS5 Blue</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Official PlayStation colors</p>
+                    </div>
+                    {theme === 'blue' && (
+                      <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setTheme('purple')}
+                  className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+                    theme === 'purple' 
+                      ? 'border-primary bg-primary/5 shadow-lg scale-105' 
+                      : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-900 to-purple-600 border-4 border-purple-300/30 shadow-lg" />
+                    <div className="text-center">
+                      <h4 className="font-semibold text-foreground">Purple Neon</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Futuristic gaming vibe</p>
+                    </div>
+                    {theme === 'purple' && (
+                      <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                      </div>
+                    )}
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Other Settings Sections */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Display Settings */}
+              <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Monitor className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">Display Settings</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Resolution</span>
+                    <span className="text-sm font-medium text-foreground">1920x1080</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Refresh Rate</span>
+                    <span className="text-sm font-medium text-foreground">60 Hz</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">HDR</span>
+                    <span className="text-sm font-medium text-foreground">Enabled</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Audio Settings */}
+              <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Volume2 className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">Audio Settings</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Master Volume</span>
+                    <span className="text-sm font-medium text-foreground">85%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">3D Audio</span>
+                    <span className="text-sm font-medium text-foreground">Enabled</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Voice Chat</span>
+                    <span className="text-sm font-medium text-foreground">Always On</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
