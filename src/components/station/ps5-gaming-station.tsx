@@ -170,354 +170,465 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
-      {/* Clean Header */}
-      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-lg">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Brand & Platform */}
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-primary shadow-lg">
-                  <Gamepad2 className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground">Gaming Station</h1>
-                  <p className="text-sm text-muted-foreground">Premium Gaming Experience</p>
-                </div>
-              </div>
-              
-              {/* Clean Platform Switch */}
-              <div className="flex items-center bg-muted rounded-lg p-1 border border-border">
-                <button
-                  onClick={() => setPlatform("pc")}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                    platform === "pc"
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background"
-                  }`}
-                >
-                  <Monitor className="w-4 h-4" />
-                  PC Mode
-                </button>
-                <button
-                  onClick={() => setPlatform("ps5")}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                    platform === "ps5"
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background"
-                  }`}
-                >
-                  <Zap className="w-4 h-4" />
-                  PS5 Mode
-                </button>
-              </div>
-            </div>
-
-            {/* Enhanced Search */}
-            <div className="flex-1 max-w-lg mx-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search games, apps, tools..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* User Actions & Info */}
-            <div className="flex items-center gap-4">
-              {/* Time Remaining Info */}
-              <div className="hidden lg:flex items-center bg-muted rounded-lg px-4 py-2 border border-border">
-                <div className="text-center">
-                  <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-green-600' : timeLeft > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
-                    {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
+      {/* Clean Header - Only shown in PC mode */}
+      {platform === "pc" && (
+        <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-lg">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              {/* Brand & Platform */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-primary shadow-lg">
+                    <Gamepad2 className="w-6 h-6 text-primary-foreground" />
                   </div>
-                  <div className="text-xs text-muted-foreground">Time Remaining</div>
+                  <div>
+                    <h1 className="text-2xl font-bold text-foreground">Gaming Station</h1>
+                    <p className="text-sm text-muted-foreground">Premium Gaming Experience</p>
+                  </div>
+                </div>
+                
+                {/* Clean Platform Switch */}
+                <div className="flex items-center bg-muted rounded-lg p-1 border border-border">
+                  <button
+                    onClick={() => setPlatform("pc")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      platform === "pc"
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background"
+                    }`}
+                  >
+                    <Monitor className="w-4 h-4" />
+                    PC Mode
+                  </button>
+                  <button
+                    onClick={() => setPlatform("ps5")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      platform === "ps5"
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background"
+                    }`}
+                  >
+                    <Zap className="w-4 h-4" />
+                    PS5 Mode
+                  </button>
                 </div>
               </div>
 
-              {/* Enhanced Profile Menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-3 px-3 py-2 h-auto hover:bg-muted">
-                    <Avatar className="w-10 h-10 border-2 border-primary">
-                      <AvatarImage src="/placeholder.svg" alt="User" />
-                      <AvatarFallback className="bg-primary text-primary-foreground font-bold">
-                        {user.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="text-left hidden md:block">
-                      <div className="text-sm font-semibold text-foreground">{user.name}</div>
-                      <div className="text-xs text-muted-foreground">Level {user.level} • {user.email}</div>
+              {/* Enhanced Search */}
+              <div className="flex-1 max-w-lg mx-8">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search games, apps, tools..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* User Actions & Info */}
+              <div className="flex items-center gap-4">
+                {/* Time Remaining Info */}
+                <div className="hidden lg:flex items-center bg-muted rounded-lg px-4 py-2 border border-border">
+                  <div className="text-center">
+                    <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-green-600' : timeLeft > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
                     </div>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
-                  {/* Profile Header */}
-                  <div className="p-4 border-b border-border">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="w-16 h-16 border-2 border-primary">
+                    <div className="text-xs text-muted-foreground">Time Remaining</div>
+                  </div>
+                </div>
+
+                {/* Enhanced Profile Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-3 px-3 py-2 h-auto hover:bg-muted">
+                      <Avatar className="w-10 h-10 border-2 border-primary">
                         <AvatarImage src="/placeholder.svg" alt="User" />
-                        <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
+                        <AvatarFallback className="bg-primary text-primary-foreground font-bold">
                           {user.name.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-foreground text-lg">{user.name}</h3>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge variant="secondary" className="text-xs font-medium">
-                            Level {user.level}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            Premium Member
-                          </Badge>
+                      <div className="text-left hidden md:block">
+                        <div className="text-sm font-semibold text-foreground">{user.name}</div>
+                        <div className="text-xs text-muted-foreground">Level {user.level} • {user.email}</div>
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-80">
+                    {/* Profile Header */}
+                    <div className="p-4 border-b border-border">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="w-16 h-16 border-2 border-primary">
+                          <AvatarImage src="/placeholder.svg" alt="User" />
+                          <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
+                            {user.name.split(' ').map(n => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-foreground text-lg">{user.name}</h3>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="secondary" className="text-xs font-medium">
+                              Level {user.level}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              Premium Member
+                            </Badge>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Quick Stats */}
-                  <div className="p-4 border-b border-border">
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div className="space-y-1">
-                        <div className="text-2xl font-bold text-foreground">
-                          {Math.floor(user.totalPlaytime / 60)}h
+                    
+                    {/* Quick Stats */}
+                    <div className="p-4 border-b border-border">
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div className="space-y-1">
+                          <div className="text-2xl font-bold text-foreground">
+                            {Math.floor(user.totalPlaytime / 60)}h
+                          </div>
+                          <div className="text-xs text-muted-foreground">Total Play</div>
                         </div>
-                        <div className="text-xs text-muted-foreground">Total Play</div>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="text-2xl font-bold text-primary">{user.gamesPlayed}</div>
-                        <div className="text-xs text-muted-foreground">Games</div>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="text-2xl font-bold text-foreground">{user.achievements}</div>
-                        <div className="text-xs text-muted-foreground">Achievements</div>
+                        <div className="space-y-1">
+                          <div className="text-2xl font-bold text-primary">{user.gamesPlayed}</div>
+                          <div className="text-xs text-muted-foreground">Games</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-2xl font-bold text-foreground">{user.achievements}</div>
+                          <div className="text-xs text-muted-foreground">Achievements</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Menu Items */}
-                  <div className="p-2">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <User className="w-4 h-4 mr-3" />
-                      View Full Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Trophy className="w-4 h-4 mr-3" />
-                      Achievements & Stats
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => setActiveTab('settings')}
-                      className="cursor-pointer"
-                    >
-                      <Settings className="w-4 h-4 mr-3" />
-                      Settings & Preferences
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onClick={onLogout}
-                      className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
-                    >
-                      <LogOut className="w-4 h-4 mr-3" />
-                      Sign Out
-                    </DropdownMenuItem>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    
+                    {/* Menu Items */}
+                    <div className="p-2">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="w-4 h-4 mr-3" />
+                        View Full Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Trophy className="w-4 h-4 mr-3" />
+                        Achievements & Stats
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setActiveTab('settings')}
+                        className="cursor-pointer"
+                      >
+                        <Settings className="w-4 h-4 mr-3" />
+                        Settings & Preferences
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={onLogout}
+                        className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                      >
+                        <LogOut className="w-4 h-4 mr-3" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
-      {/* Controller-Friendly Navigation for PS5 Mode */}
-      <nav className="bg-muted/50 border-b border-border">
-        <div className="container mx-auto px-6">
-          <div className={platform === "ps5" ? "flex justify-center space-x-6" : "flex space-x-2"}>
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
-                    platform === "ps5" 
-                      ? `px-8 py-6 text-lg font-bold rounded-xl ${
-                          activeTab === tab.id
-                            ? "bg-primary text-primary-foreground shadow-lg scale-105"
-                            : "text-muted-foreground hover:text-foreground hover:bg-background/50 hover:scale-105"
-                        }`
-                      : `px-6 py-4 text-sm font-medium rounded-t-lg ${
-                          activeTab === tab.id
-                            ? "bg-background text-primary border-b-2 border-primary shadow-sm"
-                            : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                        }`
-                  }`}
-                >
-                  <Icon className={platform === "ps5" ? "w-6 h-6" : "w-4 h-4"} />
-                  {tab.name}
-                </button>
-              )
-            })}
+      {/* Controller-Friendly Navigation - Only shown in PC mode */}
+      {platform === "pc" && (
+        <nav className="bg-muted/50 border-b border-border">
+          <div className="container mx-auto px-6">
+            <div className="flex space-x-2">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 px-6 py-4 text-sm font-medium rounded-t-lg ${
+                      activeTab === tab.id
+                        ? "bg-background text-foreground border-t-2 border-primary shadow-sm"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {tab.name}
+                  </button>
+                )
+              })}
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
 
-      {/* Content */}
-      <main className="container mx-auto px-6 py-8">
-        {activeTab === "home" && (
-          <div className="space-y-12">
-            {/* Welcome Section */}
-            <div className="bg-gradient-to-r from-ps5-accent/20 to-blue-600/20 rounded-2xl p-8 border border-ps5-accent/30">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-3xl font-bold text-ps5-white mb-2">
-                    Welcome back, {user.name}!
-                  </h2>
-                  <p className="text-ps5-white/70">
-                    Ready to continue your {platform === "pc" ? "PC" : "PS5"} gaming adventure?
-                  </p>
-                </div>
-                <div className="text-right text-ps5-white/70">
-                  <div className="text-2xl font-bold text-ps5-accent">
-                    {Math.floor(user.totalPlaytime / 60)}h
+      {/* Main Content */}
+      <main className="flex-1 overflow-hidden">
+        {platform === "ps5" ? (
+          /* PS5 Interface - Fullscreen with Background */
+          <div className="relative h-screen w-full overflow-hidden">
+            {/* Game Background Wallpaper */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000"
+              style={{
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
+              }}
+            />
+            
+            {/* Top Drawer - System Info */}
+            <div className="absolute top-0 left-0 right-0 z-20">
+              <div className="bg-black/40 backdrop-blur-md border-b border-white/10">
+                <div className="container mx-auto px-6 py-3">
+                  <div className="flex items-center justify-between text-white">
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <Wifi className="w-4 h-4" />
+                        <span className="text-sm">Connected</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Volume2 className="w-4 h-4" />
+                        <span className="text-sm">85%</span>
+                      </div>
+                      {/* Platform Switch */}
+                      <button
+                        onClick={() => setPlatform("pc")}
+                        className="flex items-center gap-2 px-3 py-1 rounded-md text-sm bg-white/20 hover:bg-white/30 transition-all"
+                      >
+                        <Monitor className="w-4 h-4" />
+                        Switch to PC Mode
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <div className="text-sm">
+                        {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span className="text-sm">
+                          {Math.floor(timeLeft / 60)}h {timeLeft % 60}m left
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm">Total Playtime</div>
                 </div>
               </div>
             </div>
 
-            {/* Top 5 Most Played */}
-            <GameCarousel
-              title={`🏆 Top ${platform.toUpperCase()} Games`}
-              games={getTopGames()}
-              onGameSelect={handleGameSelect}
-              platform={platform}
-            />
+            {/* Game Info Panel - Right Side */}
+            <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 w-80">
+              <div className="bg-black/60 backdrop-blur-xl rounded-2xl border border-white/20 p-6 space-y-6">
+                {/* Featured Game */}
+                <div className="space-y-4">
+                  <div className="aspect-video bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl relative overflow-hidden">
+                    <img 
+                      src="https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                      alt="Spider-Man 2"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h3 className="text-xl font-bold">Spider-Man 2</h3>
+                      <p className="text-sm opacity-90">Continue your adventure</p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="absolute bottom-4 right-4 bg-white text-black hover:bg-gray-200 font-semibold px-6 text-lg py-3 focus:outline-none focus:ring-4 focus:ring-white/50"
+                      onClick={() => handleGameSelect(ps5Games.find(g => g.title === "Spider-Man 2") || ps5Games[0])}
+                    >
+                      Play
+                    </Button>
+                  </div>
+                  
+                  {/* Game Progress */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-white text-sm">
+                      <span>Story Progress</span>
+                      <span>75%</span>
+                    </div>
+                    <div className="w-full bg-white/20 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-2 rounded-full" style={{width: '75%'}} />
+                    </div>
+                  </div>
+                </div>
 
-            {/* Recently Played */}
-            <GameCarousel
-              title="⏱️ Continue Playing"
-              games={getRecentGames()}
-              onGameSelect={handleGameSelect}
-              platform={platform}
-            />
+                {/* Recent Games */}
+                <div className="space-y-4">
+                  <h4 className="text-white font-semibold">Recent Games</h4>
+                  <div className="space-y-3">
+                    {getRecentGames().slice(0, 3).map((game, index) => (
+                      <button
+                        key={game.id}
+                        onClick={() => handleGameSelect(game)}
+                        className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all group focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center">
+                          <Gamepad2 className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="flex-1 text-left">
+                          <h5 className="text-white font-medium text-sm group-hover:text-blue-300 transition-colors">
+                            {game.title}
+                          </h5>
+                          <p className="text-white/60 text-xs">{game.lastPlayed}</p>
+                        </div>
+                        {game.progress && game.progress > 0 && (
+                          <div className="text-xs text-white/60">{game.progress}%</div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            {platform === "pc" && (
-              <>
-                {/* PC Tools & Launchers */}
-                <GameCarousel
-                  title="🚀 Launchers & Tools"
-                  games={allGames.filter(game => 
-                    game.category === "Launcher" || 
-                    game.category === "Tool" || 
-                    game.category === "Browser" ||
-                    game.category === "Communication"
-                  )}
-                  onGameSelect={handleGameSelect}
-                  platform={platform}
-                />
-              </>
-            )}
+                {/* Quick Actions */}
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 text-lg py-3 focus:outline-none focus:ring-4 focus:ring-white/30"
+                    onClick={() => setActiveTab('games')}
+                  >
+                    <Gamepad2 className="w-4 h-4 mr-2" />
+                    All Games
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 text-lg py-3 focus:outline-none focus:ring-4 focus:ring-white/30"
+                    onClick={() => setActiveTab('profile')}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
+                  </Button>
+                </div>
+              </div>
+            </div>
 
-            {platform === "ps5" && (
-              <>
-                {/* PS5 Exclusives */}
-                <GameCarousel
-                  title="🎮 PlayStation Exclusives"
-                  games={allGames.filter(game => 
-                    ["Spider-Man 2", "God of War Ragnarök", "Horizon Forbidden West", "Ratchet & Clank"].includes(game.title)
-                  )}
-                  onGameSelect={handleGameSelect}
-                  platform={platform}
-                />
-              </>
-            )}
+            {/* Bottom Game Bar */}
+            <div className="absolute bottom-8 left-8 right-8 z-20">
+              <div className="bg-black/40 backdrop-blur-md rounded-2xl border border-white/20 p-4">
+                <div className="flex items-center gap-4 overflow-x-auto">
+                  {getRecentGames().slice(0, 6).map((game, index) => (
+                    <button
+                      key={game.id}
+                      onClick={() => handleGameSelect(game)}
+                      className={`flex-shrink-0 group focus:outline-none focus:ring-4 focus:ring-blue-400/50 rounded-xl transition-all ${
+                        index === 0 ? 'scale-110' : 'hover:scale-105'
+                      }`}
+                    >
+                      <div className={`relative overflow-hidden rounded-xl transition-all ${
+                        index === 0 ? 'w-32 h-20' : 'w-28 h-16'
+                      }`}>
+                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                          <Gamepad2 className={`text-white ${index === 0 ? 'w-8 h-8' : 'w-6 h-6'}`} />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                        <div className="absolute bottom-1 left-2 right-2">
+                          <p className={`text-white font-medium truncate ${index === 0 ? 'text-xs' : 'text-[10px]'}`}>
+                            {game.title}
+                          </p>
+                        </div>
+                        {index === 0 && (
+                          <div className="absolute top-2 right-2">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-
-        {activeTab === "games" && (
-          <div className="space-y-12">
-            {/* Platform-specific categories */}
-            {platform === "pc" ? (
+        ) : (
+          /* PC Mode - Grid Layout */
+          <div className="container mx-auto px-6 py-8 space-y-8">
+            {activeTab === "home" && (
               <>
-                {/* PC Games */}
+                {/* Quick Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-card border border-border rounded-xl p-6 text-center shadow-lg">
+                    <div className="text-3xl font-bold text-primary">{allGames.filter(g => g.isInstalled).length}</div>
+                    <div className="text-sm text-muted-foreground mt-1">Installed</div>
+                  </div>
+                  <div className="bg-card border border-border rounded-xl p-6 text-center shadow-lg">
+                    <div className="text-3xl font-bold text-foreground">{Math.floor(user.totalPlaytime / 60)}h</div>
+                    <div className="text-sm text-muted-foreground mt-1">Total Playtime</div>
+                  </div>
+                  <div className="bg-card border border-border rounded-xl p-6 text-center shadow-lg">
+                    <div className="text-3xl font-bold text-foreground">{user.achievements}</div>
+                    <div className="text-sm text-muted-foreground mt-1">Achievements</div>
+                  </div>
+                  <div className="bg-card border border-border rounded-xl p-6 text-center shadow-lg">
+                    <div className="text-3xl font-bold text-foreground">{user.level}</div>
+                    <div className="text-sm text-muted-foreground mt-1">Level</div>
+                  </div>
+                </div>
+
+                {/* Recently Played */}
                 <GameCarousel
-                  title="🎮 PC Games"
-                  games={getInstalledGames().filter(game => 
-                    game.category === "Game"
-                  )}
+                  title="🕒 Recently Played"
+                  games={getRecentGames()}
                   onGameSelect={handleGameSelect}
                   platform={platform}
                 />
 
-                {/* Game Launchers */}
+                {/* Top Games */}
+                <GameCarousel
+                  title="🏆 Most Played"
+                  games={getTopGames()}
+                  onGameSelect={handleGameSelect}
+                  platform={platform}
+                />
+              </>
+            )}
+
+            {activeTab === "games" && (
+              <>
+                {/* Categories for PC */}
+                <GameCarousel
+                  title="🎮 Games"
+                  games={getInstalledGames().filter(game => game.category === "Game")}
+                  onGameSelect={handleGameSelect}
+                  platform={platform}
+                />
+
                 <GameCarousel
                   title="🚀 Game Launchers"
-                  games={getInstalledGames().filter(game => 
-                    game.category === "Launcher"
-                  )}
+                  games={getInstalledGames().filter(game => game.category === "Launcher")}
                   onGameSelect={handleGameSelect}
                   platform={platform}
                 />
 
-                {/* Browsers */}
                 <GameCarousel
                   title="🌐 Web Browsers"
-                  games={getInstalledGames().filter(game => 
-                    game.category === "Browser"
-                  )}
+                  games={getInstalledGames().filter(game => game.category === "Browser")}
                   onGameSelect={handleGameSelect}
                   platform={platform}
                 />
 
-                {/* Tools & Applications */}
                 <GameCarousel
                   title="🔧 Tools & Applications"
-                  games={getInstalledGames().filter(game => 
-                    game.category === "Tool"
-                  )}
-                  onGameSelect={handleGameSelect}
-                  platform={platform}
-                />
-              </>
-            ) : (
-              <>
-                {/* PS5 Games by Category */}
-                <GameCarousel
-                  title="🎮 Action Games"
-                  games={getInstalledGames().filter(game => 
-                    ["Action", "Action RPG"].includes(game.category)
-                  )}
+                  games={getInstalledGames().filter(game => game.category === "Tool")}
                   onGameSelect={handleGameSelect}
                   platform={platform}
                 />
 
+                {/* All Software */}
                 <GameCarousel
-                  title="🏁 Racing & Sports"
-                  games={getInstalledGames().filter(game => 
-                    ["Racing", "Sports"].includes(game.category)
-                  )}
-                  onGameSelect={handleGameSelect}
-                  platform={platform}
-                />
-
-                <GameCarousel
-                  title="🎲 Other Games"
-                  games={getInstalledGames().filter(game => 
-                    !["Action", "Action RPG", "Racing", "Sports"].includes(game.category)
+                  title="📥 All PC Software"
+                  games={allGames.filter(game => 
+                    searchQuery === "" || 
+                    game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    game.category.toLowerCase().includes(searchQuery.toLowerCase())
                   )}
                   onGameSelect={handleGameSelect}
                   platform={platform}
@@ -525,168 +636,156 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
               </>
             )}
 
-            {/* All Games */}
-            <GameCarousel
-              title={`📥 All ${platform.toUpperCase()} ${platform === "pc" ? "Software" : "Games"}`}
-              games={allGames.filter(game => 
-                searchQuery === "" || 
-                game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                game.category.toLowerCase().includes(searchQuery.toLowerCase())
-              )}
-              onGameSelect={handleGameSelect}
-              platform={platform}
-            />
-          </div>
-        )}
-
-        {activeTab === "profile" && (
-          <div className="max-w-2xl mx-auto">
-            <UserProfile
-              user={user}
-              onLogout={onLogout}
-              onSettings={() => setActiveTab('settings')}
-            />
-          </div>
-        )}
-
-        {activeTab === "settings" && (
-          <div className="max-w-4xl mx-auto space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-foreground mb-2">Settings & Preferences</h2>
-              <p className="text-muted-foreground">Customize your gaming experience</p>
-            </div>
-
-            {/* Theme Preferences */}
-            <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Palette className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground">Theme Preferences</h3>
-                  <p className="text-sm text-muted-foreground">Choose your preferred color theme</p>
-                </div>
+            {activeTab === "profile" && (
+              <div className="max-w-2xl mx-auto">
+                <UserProfile
+                  user={user}
+                  onLogout={onLogout}
+                  onSettings={() => setActiveTab('settings')}
+                />
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button
-                  onClick={() => setTheme('dark')}
-                  className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
-                    theme === 'dark' 
-                      ? 'border-primary bg-primary/5 shadow-lg scale-105' 
-                      : 'border-border hover:border-primary/50 hover:bg-muted/50'
-                  }`}
-                >
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-900 to-slate-700 border-4 border-white/20 shadow-lg" />
-                    <div className="text-center">
-                      <h4 className="font-semibold text-foreground">Dark Theme</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Classic dark gaming mode</p>
+            )}
+
+            {activeTab === "settings" && (
+              <div className="max-w-4xl mx-auto space-y-8">
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold text-foreground mb-2">Settings & Preferences</h2>
+                  <p className="text-muted-foreground">Customize your gaming experience</p>
+                </div>
+
+                {/* Theme Preferences */}
+                <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Palette className="w-6 h-6 text-primary" />
                     </div>
-                    {theme === 'dark' && (
-                      <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-primary-foreground rounded-full" />
-                      </div>
-                    )}
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setTheme('blue')}
-                  className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
-                    theme === 'blue' 
-                      ? 'border-primary bg-primary/5 shadow-lg scale-105' 
-                      : 'border-border hover:border-primary/50 hover:bg-muted/50'
-                  }`}
-                >
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-900 to-blue-600 border-4 border-blue-300/30 shadow-lg" />
-                    <div className="text-center">
-                      <h4 className="font-semibold text-foreground">PS5 Blue</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Official PlayStation colors</p>
+                    <div>
+                      <h3 className="text-xl font-semibold text-foreground">Theme Preferences</h3>
+                      <p className="text-sm text-muted-foreground">Choose your preferred color theme</p>
                     </div>
-                    {theme === 'blue' && (
-                      <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-primary-foreground rounded-full" />
-                      </div>
-                    )}
                   </div>
-                </button>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button
+                      onClick={() => setTheme('dark')}
+                      className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+                        theme === 'dark' 
+                          ? 'border-primary bg-primary/5 shadow-lg scale-105' 
+                          : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-900 to-slate-700 border-4 border-white/20 shadow-lg" />
+                        <div className="text-center">
+                          <h4 className="font-semibold text-foreground">Dark Theme</h4>
+                          <p className="text-xs text-muted-foreground mt-1">Classic dark gaming mode</p>
+                        </div>
+                        {theme === 'dark' && (
+                          <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                          </div>
+                        )}
+                      </div>
+                    </button>
 
-                <button
-                  onClick={() => setTheme('purple')}
-                  className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
-                    theme === 'purple' 
-                      ? 'border-primary bg-primary/5 shadow-lg scale-105' 
-                      : 'border-border hover:border-primary/50 hover:bg-muted/50'
-                  }`}
-                >
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-900 to-purple-600 border-4 border-purple-300/30 shadow-lg" />
-                    <div className="text-center">
-                      <h4 className="font-semibold text-foreground">Purple Neon</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Futuristic gaming vibe</p>
+                    <button
+                      onClick={() => setTheme('blue')}
+                      className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+                        theme === 'blue' 
+                          ? 'border-primary bg-primary/5 shadow-lg scale-105' 
+                          : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-900 to-blue-600 border-4 border-blue-300/30 shadow-lg" />
+                        <div className="text-center">
+                          <h4 className="font-semibold text-foreground">PS5 Blue</h4>
+                          <p className="text-xs text-muted-foreground mt-1">Official PlayStation colors</p>
+                        </div>
+                        {theme === 'blue' && (
+                          <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                          </div>
+                        )}
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => setTheme('purple')}
+                      className={`group relative p-6 rounded-xl border-2 transition-all focus:outline-none focus:ring-4 focus:ring-primary/30 ${
+                        theme === 'purple' 
+                          ? 'border-primary bg-primary/5 shadow-lg scale-105' 
+                          : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-900 to-purple-600 border-4 border-purple-300/30 shadow-lg" />
+                        <div className="text-center">
+                          <h4 className="font-semibold text-foreground">Purple Neon</h4>
+                          <p className="text-xs text-muted-foreground mt-1">Futuristic gaming vibe</p>
+                        </div>
+                        {theme === 'purple' && (
+                          <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Other Settings Sections */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Display Settings */}
+                  <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Monitor className="w-5 h-5 text-primary" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-foreground">Display Settings</h3>
                     </div>
-                    {theme === 'purple' && (
-                      <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Resolution</span>
+                        <span className="text-sm font-medium text-foreground">1920x1080</span>
                       </div>
-                    )}
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Refresh Rate</span>
+                        <span className="text-sm font-medium text-foreground">60 Hz</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">HDR</span>
+                        <span className="text-sm font-medium text-foreground">Enabled</span>
+                      </div>
+                    </div>
                   </div>
-                </button>
-              </div>
-            </div>
 
-            {/* Other Settings Sections */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Display Settings */}
-              <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Monitor className="w-5 h-5 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground">Display Settings</h3>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Resolution</span>
-                    <span className="text-sm font-medium text-foreground">1920x1080</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Refresh Rate</span>
-                    <span className="text-sm font-medium text-foreground">60 Hz</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">HDR</span>
-                    <span className="text-sm font-medium text-foreground">Enabled</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Audio Settings */}
-              <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Volume2 className="w-5 h-5 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground">Audio Settings</h3>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Master Volume</span>
-                    <span className="text-sm font-medium text-foreground">85%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">3D Audio</span>
-                    <span className="text-sm font-medium text-foreground">Enabled</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Voice Chat</span>
-                    <span className="text-sm font-medium text-foreground">Always On</span>
+                  {/* Audio Settings */}
+                  <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Volume2 className="w-5 h-5 text-primary" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-foreground">Audio Settings</h3>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Master Volume</span>
+                        <span className="text-sm font-medium text-foreground">85%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">3D Audio</span>
+                        <span className="text-sm font-medium text-foreground">Enabled</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Voice Chat</span>
+                        <span className="text-sm font-medium text-foreground">Always On</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
