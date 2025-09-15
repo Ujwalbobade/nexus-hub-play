@@ -203,7 +203,7 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                   <button
                     onClick={() => setPlatform("ps5")}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                      platform === "ps5"
+                      platform !== "pc"
                         ? "bg-primary text-primary-foreground shadow-md"
                         : "text-muted-foreground hover:text-foreground hover:bg-background"
                     }`}
@@ -384,40 +384,68 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
               }}
             />
             
-            {/* Top Drawer - System Info */}
+            {/* Top Drawer - Game Selector & System Info */}
             <div className="absolute top-0 left-0 right-0 z-20">
-              <div className="bg-black/40 backdrop-blur-md border-b border-white/10">
-                <div className="container mx-auto px-6 py-3">
-                  <div className="flex items-center justify-between text-white">
-                    <div className="flex items-center gap-6">
-                      <div className="flex items-center gap-2">
-                        <Wifi className="w-4 h-4" />
-                        <span className="text-sm">Connected</span>
+              <div className="bg-ps5-black/60 backdrop-blur-xl border-b border-ps5-surface/30">
+                <div className="container mx-auto px-6 py-4">
+                  {/* Game Selector Bar */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      <h2 className="text-ps5-text font-bold text-lg">Featured Games</h2>
+                      <div className="flex items-center bg-ps5-surface/20 rounded-lg p-1">
+                        <button
+                          onClick={() => setPlatform("pc")}
+                          className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all focus:outline-none focus:ring-4 focus:ring-ps5-blue/50 text-ps5-text/80 hover:text-ps5-text hover:bg-ps5-surface/20"
+                        >
+                          <Monitor className="w-4 h-4" />
+                          PC Mode
+                        </button>
+                        <button
+                          onClick={() => setPlatform("ps5")}
+                          className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all focus:outline-none focus:ring-4 focus:ring-ps5-blue/50 bg-ps5-blue text-white shadow-md"
+                        >
+                          <Zap className="w-4 h-4" />
+                          PS5 Mode
+                        </button>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Volume2 className="w-4 h-4" />
-                        <span className="text-sm">85%</span>
-                      </div>
-                      {/* Platform Switch */}
-                      <button
-                        onClick={() => setPlatform("pc")}
-                        className="flex items-center gap-2 px-3 py-1 rounded-md text-sm bg-white/20 hover:bg-white/30 transition-all"
-                      >
-                        <Monitor className="w-4 h-4" />
-                        Switch to PC Mode
-                      </button>
                     </div>
                     
-                    <div className="flex items-center gap-4">
-                      <div className="text-sm">
-                        {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    <div className="flex items-center gap-6 text-ps5-text">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Wifi className="w-4 h-4 text-ps5-text/80" />
+                          <span className="text-sm">Connected</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Volume2 className="w-4 h-4 text-ps5-text/80" />
+                          <span className="text-sm">85%</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-ps5-text/80" />
+                          <span className={`text-sm font-semibold ${timeLeft > 30 ? 'text-green-400' : timeLeft > 10 ? 'text-yellow-400' : 'text-red-400'}`}>
+                            {Math.floor(timeLeft / 60)}h {timeLeft % 60}m left
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span className="text-sm">
-                          {Math.floor(timeLeft / 60)}h {timeLeft % 60}m left
-                        </span>
-                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Game Selection Carousel */}
+                  <div className="overflow-x-auto">
+                    <div className="flex gap-4 pb-2">
+                      {ps5Games.slice(0, 6).map((game) => (
+                        <button
+                          key={game.id}
+                          onClick={() => handleGameSelect(game)}
+                          className="flex-shrink-0 w-32 h-20 bg-ps5-surface/20 rounded-lg border border-ps5-blue/30 hover:border-ps5-blue hover:bg-ps5-surface/30 transition-all focus:outline-none focus:ring-4 focus:ring-ps5-blue/50 overflow-hidden group"
+                        >
+                          <div className="w-full h-full bg-gradient-to-br from-ps5-blue/20 to-purple-600/20 flex items-center justify-center">
+                            <span className="text-ps5-text text-xs font-medium text-center px-2 group-hover:text-white transition-colors">
+                              {game.title}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
