@@ -376,6 +376,63 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
         {platform === "ps5" ? (
           /* PS5 Interface - Fullscreen with Background */
           <div className="relative h-screen w-full overflow-hidden">
+            {/* Profile Info Bar at Top */}
+            <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/80 via-black/60 to-transparent">
+              <div className="flex items-center justify-between p-6">
+                <div className="flex items-center gap-4 animate-fade-in">
+                  <Avatar className="w-12 h-12 border-2 border-white/30">
+                    <AvatarImage src="/placeholder.svg" alt="User" />
+                    <AvatarFallback className="bg-ps5-blue text-white font-bold">
+                      {user.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="text-white font-bold text-lg">{user.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-ps5-blue/80 text-white border-0">
+                        Level {user.level}
+                      </Badge>
+                      <span className="text-white/70 text-sm">{Math.floor(user.totalPlaytime / 60)}h played</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-white hover:bg-white/20 focus:bg-white/20 focus:ring-2 focus:ring-white/50"
+                    >
+                      <Settings className="w-5 h-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 bg-ps5-surface/95 backdrop-blur-md border-ps5-accent">
+                    <DropdownMenuItem className="text-ps5-text hover:bg-ps5-blue/20">
+                      <User className="w-4 h-4 mr-3" />
+                      View Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="text-ps5-text hover:bg-ps5-blue/20">
+                      <Trophy className="w-4 h-4 mr-3" />
+                      Achievements
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="text-ps5-text hover:bg-ps5-blue/20">
+                      <Settings className="w-4 h-4 mr-3" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={onLogout}
+                      className="text-red-400 hover:bg-red-500/20 focus:bg-red-500/20"
+                    >
+                      <LogOut className="w-4 h-4 mr-3" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+
             {/* Game Background Wallpaper */}
             <div 
               className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000"
