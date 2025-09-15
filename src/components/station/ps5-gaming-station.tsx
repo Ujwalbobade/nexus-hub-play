@@ -453,24 +453,25 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
             </div>
 
             {/* Game Info Panel - Right Side */}
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 w-80">
-              <div className="bg-black/60 backdrop-blur-xl rounded-2xl border border-white/20 p-6 space-y-6">
+            <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 w-80 animate-slide-in-right">
+              <div className="bg-ps5-surface/40 backdrop-blur-xl rounded-2xl border border-ps5-blue/30 p-6 space-y-6 hover-scale">
                 {/* Featured Game */}
-                <div className="space-y-4">
-                  <div className="aspect-video bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl relative overflow-hidden">
+                <div className="space-y-4 animate-fade-in">
+                  <div className="aspect-video bg-gradient-to-br from-ps5-blue to-purple-600 rounded-xl relative overflow-hidden group">
                     <img 
                       src="https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
                       alt="Spider-Man 2"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                    <div className="absolute bottom-4 left-4 text-white">
+                    <div className="absolute bottom-4 left-4 text-ps5-text animate-fade-in" style={{ animationDelay: '0.2s' }}>
                       <h3 className="text-xl font-bold">Spider-Man 2</h3>
                       <p className="text-sm opacity-90">Continue your adventure</p>
                     </div>
                     <Button 
                       size="sm" 
-                      className="absolute bottom-4 right-4 bg-white text-black hover:bg-gray-200 font-semibold px-6 text-lg py-3 focus:outline-none focus:ring-4 focus:ring-white/50"
+                      className="absolute bottom-4 right-4 bg-ps5-blue text-white hover:bg-ps5-blue/80 font-semibold px-6 text-lg py-3 focus:outline-none focus:ring-4 focus:ring-ps5-blue/50 hover-scale animate-scale-in"
+                      style={{ animationDelay: '0.4s' }}
                       onClick={() => handleGameSelect(ps5Games.find(g => g.title === "Spider-Man 2") || ps5Games[0])}
                     >
                       Play
@@ -478,38 +479,39 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                   </div>
                   
                   {/* Game Progress */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-white text-sm">
+                  <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                    <div className="flex justify-between text-ps5-text text-sm">
                       <span>Story Progress</span>
                       <span>75%</span>
                     </div>
-                    <div className="w-full bg-white/20 rounded-full h-2">
-                      <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-2 rounded-full" style={{width: '75%'}} />
+                    <div className="w-full bg-ps5-surface/30 rounded-full h-2 overflow-hidden">
+                      <div className="bg-gradient-to-r from-ps5-blue to-cyan-400 h-2 rounded-full transition-all duration-1000" style={{width: '75%'}} />
                     </div>
                   </div>
                 </div>
 
                 {/* Recent Games */}
-                <div className="space-y-4">
-                  <h4 className="text-white font-semibold">Recent Games</h4>
+                <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+                  <h4 className="text-ps5-text font-semibold">Recent Games</h4>
                   <div className="space-y-3">
                     {getRecentGames().slice(0, 3).map((game, index) => (
                       <button
                         key={game.id}
                         onClick={() => handleGameSelect(game)}
-                        className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all group focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="w-full flex items-center gap-3 p-3 rounded-xl bg-ps5-surface/20 hover:bg-ps5-surface/30 transition-all group focus:outline-none focus:ring-2 focus:ring-ps5-blue hover-scale animate-fade-in"
+                        style={{ animationDelay: `${0.6 + index * 0.1}s` }}
                       >
-                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center">
-                          <Gamepad2 className="w-6 h-6 text-white" />
+                        <div className="w-12 h-12 bg-gradient-to-br from-ps5-surface to-ps5-card rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <Gamepad2 className="w-6 h-6 text-ps5-text" />
                         </div>
                         <div className="flex-1 text-left">
-                          <h5 className="text-white font-medium text-sm group-hover:text-blue-300 transition-colors">
+                          <h5 className="text-ps5-text font-medium text-sm group-hover:text-ps5-blue transition-colors">
                             {game.title}
                           </h5>
-                          <p className="text-white/60 text-xs">{game.lastPlayed}</p>
+                          <p className="text-ps5-text/60 text-xs">{game.lastPlayed}</p>
                         </div>
                         {game.progress && game.progress > 0 && (
-                          <div className="text-xs text-white/60">{game.progress}%</div>
+                          <div className="text-xs text-ps5-text/60">{game.progress}%</div>
                         )}
                       </button>
                     ))}
@@ -517,11 +519,11 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 animate-fade-in" style={{ animationDelay: '0.8s' }}>
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 text-lg py-3 focus:outline-none focus:ring-4 focus:ring-white/30"
+                    className="flex-1 bg-ps5-surface/20 border-ps5-blue/30 text-ps5-text hover:bg-ps5-surface/30 hover:border-ps5-blue text-lg py-3 focus:outline-none focus:ring-4 focus:ring-ps5-blue/30 hover-scale"
                     onClick={() => setActiveTab('games')}
                   >
                     <Gamepad2 className="w-4 h-4 mr-2" />
@@ -530,48 +532,12 @@ export function PS5GamingStation({ onLogout }: PS5GamingStationProps) {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 text-lg py-3 focus:outline-none focus:ring-4 focus:ring-white/30"
+                    className="flex-1 bg-ps5-surface/20 border-ps5-blue/30 text-ps5-text hover:bg-ps5-surface/30 hover:border-ps5-blue text-lg py-3 focus:outline-none focus:ring-4 focus:ring-ps5-blue/30 hover-scale"
                     onClick={() => setActiveTab('profile')}
                   >
                     <User className="w-4 h-4 mr-2" />
                     Profile
                   </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Game Bar */}
-            <div className="absolute bottom-8 left-8 right-8 z-20">
-              <div className="bg-black/40 backdrop-blur-md rounded-2xl border border-white/20 p-4">
-                <div className="flex items-center gap-4 overflow-x-auto">
-                  {getRecentGames().slice(0, 6).map((game, index) => (
-                    <button
-                      key={game.id}
-                      onClick={() => handleGameSelect(game)}
-                      className={`flex-shrink-0 group focus:outline-none focus:ring-4 focus:ring-blue-400/50 rounded-xl transition-all ${
-                        index === 0 ? 'scale-110' : 'hover:scale-105'
-                      }`}
-                    >
-                      <div className={`relative overflow-hidden rounded-xl transition-all ${
-                        index === 0 ? 'w-32 h-20' : 'w-28 h-16'
-                      }`}>
-                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-                          <Gamepad2 className={`text-white ${index === 0 ? 'w-8 h-8' : 'w-6 h-6'}`} />
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                        <div className="absolute bottom-1 left-2 right-2">
-                          <p className={`text-white font-medium truncate ${index === 0 ? 'text-xs' : 'text-[10px]'}`}>
-                            {game.title}
-                          </p>
-                        </div>
-                        {index === 0 && (
-                          <div className="absolute top-2 right-2">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  ))}
                 </div>
               </div>
             </div>
