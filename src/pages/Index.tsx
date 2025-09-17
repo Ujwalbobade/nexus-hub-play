@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { LoginScreen } from "@/components/auth/login-screen"
-import { PS5GamingStation } from "@/components/station/ps5-gaming-station"
+import { UnifiedGamingStation } from "@/components/station/unified-gaming-station"
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -19,7 +19,7 @@ const Index = () => {
     return <LoginScreen onLogin={handleLogin} />
   }
 
-  return <PS5GamingStation onLogout={handleLogout} />
+  return <UnifiedGamingStation onLogout={handleLogout} />
 };
 
 export default Index;

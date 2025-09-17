@@ -1,0 +1,322 @@
+import { useState, useEffect } from "react"
+import { GameCarousel } from "@/components/ui/game-carousel"
+import { Button } from "@/components/ui/button"
+import { 
+  Home, 
+  Gamepad2, 
+  User, 
+  Settings, 
+  Search,
+  Monitor,
+  Zap,
+  LogOut,
+  X,
+  Trophy,
+  ChevronDown
+} from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+
+interface Game {
+  id: number
+  title: string
+  image?: string
+  category: string
+  playtime: number
+  lastPlayed?: string
+  isInstalled: boolean
+  progress?: number
+}
+
+interface User {
+  name: string
+  email: string
+  avatar?: string
+  level: number
+  totalPlaytime: number
+  gamesPlayed: number
+  achievements: number
+}
+
+interface UnifiedGamingStationProps {
+  onLogout: () => void
+}
+
+// Unified game data
+const gameData = {
+  pc: [
+    { id: 1, title: "Cyberpunk 2077", category: "Game", playtime: 234, lastPlayed: "2 hours ago", isInstalled: true, progress: 65 },
+    { id: 2, title: "Valorant", category: "Game", playtime: 456, lastPlayed: "Yesterday", isInstalled: true, progress: 0 },
+    { id: 3, title: "League of Legends", category: "Game", playtime: 789, lastPlayed: "3 days ago", isInstalled: true, progress: 0 },
+    { id: 4, title: "Steam", category: "Launcher", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 5, title: "Discord", category: "Tool", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+    { id: 6, title: "Chrome", category: "Browser", playtime: 0, lastPlayed: "Always", isInstalled: true, progress: 0 },
+  ],
+  ps5: [
+    { id: 1, title: "Spider-Man 2", category: "Action", playtime: 134, lastPlayed: "1 hour ago", isInstalled: true, progress: 75 },
+    { id: 2, title: "God of War Ragnarök", category: "Action RPG", playtime: 256, lastPlayed: "Yesterday", isInstalled: true, progress: 45 },
+    { id: 3, title: "Horizon Forbidden West", category: "Action RPG", playtime: 189, lastPlayed: "2 days ago", isInstalled: true, progress: 60 },
+    { id: 4, title: "The Last of Us Part II", category: "Action", playtime: 223, lastPlayed: "1 week ago", isInstalled: true, progress: 100 },
+    { id: 5, title: "Ratchet & Clank", category: "Platformer", playtime: 145, lastPlayed: "3 days ago", isInstalled: true, progress: 85 },
+  ]
+}
+
+export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
+  const [platform, setPlatform] = useState<"pc" | "ps5">("pc")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [timeLeft, setTimeLeft] = useState(120)
+  const [user] = useState<User>({
+    name: "Player One",
+    email: "player@example.com",
+    level: 15,
+    totalPlaytime: 2847,
+    gamesPlayed: 12,
+    achievements: 45,
+  })
+
+  // Timer effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => Math.max(0, prev - 1))
+    }, 60000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Unified filtering logic
+  const getFilteredGames = (type: 'top' | 'recent' | 'all') => {
+    const games = gameData[platform]
+    const filtered = games.filter(game => 
+      searchQuery === "" || 
+      game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.category.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
+    switch(type) {
+      case 'top':
+        return [...filtered].sort((a, b) => b.playtime - a.playtime).slice(0, 5)
+      case 'recent':
+        return filtered.filter(game => game.lastPlayed).slice(0, 6)
+      default:
+        return filtered
+    }
+  }
+
+  const handleGameSelect = (game: Game) => {
+    console.log(`Launching ${game.title}`)
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
+      {/* Unified Header */}
+      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-lg">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Brand & Platform Switch */}
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-primary shadow-lg">
+                  <Gamepad2 className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Gaming Station</h1>
+                  <p className="text-sm text-muted-foreground">Premium Gaming Experience</p>
+                </div>
+              </div>
+              
+              {/* Platform Switch */}
+              <div className="flex items-center bg-muted rounded-lg p-1 border border-border">
+                <button
+                  onClick={() => setPlatform("pc")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    platform === "pc"
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background"
+                  }`}
+                >
+                  <Monitor className="w-4 h-4" />
+                  PC
+                </button>
+                <button
+                  onClick={() => setPlatform("ps5")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    platform === "ps5"
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background"
+                  }`}
+                >
+                  <Zap className="w-4 h-4" />
+                  PS5
+                </button>
+              </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="flex-1 max-w-lg mx-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search games..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* User Profile */}
+            <div className="flex items-center gap-4">
+              {/* Time Display */}
+              <div className="hidden lg:flex items-center bg-muted rounded-lg px-4 py-2 border border-border">
+                <div className="text-center">
+                  <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-green-600' : timeLeft > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+                    {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
+                  </div>
+                  <div className="text-xs text-muted-foreground">Time Left</div>
+                </div>
+              </div>
+
+              {/* Profile Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-3 px-3 py-2 h-auto hover:bg-muted">
+                    <Avatar className="w-10 h-10 border-2 border-primary">
+                      <AvatarImage src="/placeholder.svg" alt="User" />
+                      <AvatarFallback className="bg-primary text-primary-foreground font-bold">
+                        {user.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left hidden md:block">
+                      <div className="text-sm font-semibold text-foreground">{user.name}</div>
+                      <div className="text-xs text-muted-foreground">Level {user.level}</div>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                  {/* Profile Header */}
+                  <div className="p-4 border-b border-border">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="w-16 h-16 border-2 border-primary">
+                        <AvatarImage src="/placeholder.svg" alt="User" />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
+                          {user.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-foreground text-lg">{user.name}</h3>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <Badge variant="secondary" className="text-xs font-medium mt-2">
+                          Level {user.level}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Quick Stats */}
+                  <div className="p-4 border-b border-border">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="space-y-1">
+                        <div className="text-2xl font-bold text-foreground">
+                          {Math.floor(user.totalPlaytime / 60)}h
+                        </div>
+                        <div className="text-xs text-muted-foreground">Play Time</div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-2xl font-bold text-primary">{user.gamesPlayed}</div>
+                        <div className="text-xs text-muted-foreground">Games</div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-2xl font-bold text-foreground">{user.achievements}</div>
+                        <div className="text-xs text-muted-foreground">Achievements</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Menu Items */}
+                  <div className="p-2">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <User className="w-4 h-4 mr-3" />
+                      View Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Trophy className="w-4 h-4 mr-3" />
+                      Achievements
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Settings className="w-4 h-4 mr-3" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={onLogout}
+                      className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                    >
+                      <LogOut className="w-4 h-4 mr-3" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-6 py-8 space-y-8">
+        {/* Recently Played */}
+        <div>
+          <GameCarousel
+            title="Recently Played"
+            games={getFilteredGames('recent')}
+            onGameSelect={handleGameSelect}
+            platform={platform}
+          />
+        </div>
+
+        {/* Top Games */}
+        <div>
+          <GameCarousel
+            title="Most Played"
+            games={getFilteredGames('top')}
+            onGameSelect={handleGameSelect}
+            platform={platform}
+          />
+        </div>
+
+        {/* All Games */}
+        <div>
+          <GameCarousel
+            title="All Games"
+            games={getFilteredGames('all')}
+            onGameSelect={handleGameSelect}
+            platform={platform}
+          />
+        </div>
+
+        {/* Empty State */}
+        {searchQuery && getFilteredGames('all').length === 0 && (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+              <Search className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-medium text-foreground mb-2">No results found</h3>
+            <p className="text-muted-foreground">
+              Try searching with different keywords
+            </p>
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
