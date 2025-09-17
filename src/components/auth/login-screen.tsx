@@ -19,19 +19,20 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     e.preventDefault()
     setIsLoading(true)
     
-    // Simulate login delay
-    setTimeout(() => {
+    try {
       onLogin(email, password)
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   const handleGuestLogin = () => {
     setIsLoading(true)
-    setTimeout(() => {
+    try {
       onLogin("guest@example.com", "guest")
+    } finally {
       setIsLoading(false)
-    }, 500)
+    }
   }
 
   return (
