@@ -6,11 +6,11 @@ import { Label } from "@/components/ui/label"
 import { Gamepad2, User, Lock, Eye, EyeOff } from "lucide-react"
 
 interface LoginScreenProps {
-  onLogin: (email: string, password: string) => void
+  onLogin: (identifier: string, password: string) => void
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [email, setEmail] = useState("")
+  const [identifier, setIdentifier] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -20,7 +20,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     setIsLoading(true)
     
     try {
-      onLogin(email, password)
+      onLogin(identifier, password)
     } finally {
       setIsLoading(false)
     }
@@ -29,7 +29,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const handleGuestLogin = () => {
     setIsLoading(true)
     try {
-      onLogin("guest@example.com", "guest")
+      onLogin("guest", "guest")
     } finally {
       setIsLoading(false)
     }
@@ -52,19 +52,19 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         {/* Login Form */}
         <Card className="bg-ps5-card/80 backdrop-blur-sm border-ps5-secondary/30 p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
+            {/* Identifier Field */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-ps5-white/90">
-                Email Address
+              <Label htmlFor="identifier" className="text-ps5-white/90">
+                Username or Email
               </Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-5 h-5" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="identifier"
+                  type="text"
+                  placeholder="Enter your username or email"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   className="pl-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent"
                   required
                 />
@@ -104,7 +104,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             {/* Submit Button */}
             <Button
               type="submit"
-              disabled={isLoading || !email || !password}
+              disabled={isLoading || !identifier || !password}
               className="w-full bg-ps5-accent hover:bg-ps5-accent/90 text-white font-medium py-3 text-base shadow-lg hover:shadow-[0_8px_30px_hsl(0_112%_60%_/_0.3)] transition-all duration-200"
             >
               {isLoading ? (
@@ -141,7 +141,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
           {/* Footer */}
           <div className="mt-6 text-center text-sm text-ps5-white/50">
-            <p>Demo credentials: any email + password</p>
+            <p>Demo credentials: any username or email + password</p>
           </div>
         </Card>
 
