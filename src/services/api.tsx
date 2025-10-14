@@ -1,18 +1,3 @@
-export const login = async (username: string, password: string) => {
-  const data = await apiFetch("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ username, password }),
-  });
-
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-    console.log("Login successful, token saved:", data.token);
-  } else {
-    console.warn("Login response did not include a token:", data);
-  }
-
-  return data;
-};
 
 // ----------------- GENERIC FETCH -----------------
 export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
@@ -93,4 +78,44 @@ const getToken = async (): Promise<string | null> => {
   }
 
   return token; // fallback to old token if dummy fails
+};
+
+
+// auth-api.ts
+const API_BASE = "http://localhost:8087/api/auth/client";
+
+export const login = async (username: string, password: string) => {
+  const res = await fetch(`${API_BASE}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!res.ok) throw new Error("Invalid credentials");
+  return res.json(); // { token, role, user }
+};
+
+export const register = async (username: string, email: string, password: string) => {
+  const res = await fetch(`${API_BASE}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, email, password }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || "Registration failed");
+  }
+  return res.json();
+};
+
+export const forgotPassword = async (email: string) => {
+  const res = await fetch(`${API_BASE}/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) throw new Error("Request failed");
+  return res.json();
 };
