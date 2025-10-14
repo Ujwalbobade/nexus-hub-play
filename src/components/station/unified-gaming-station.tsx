@@ -12,8 +12,12 @@ import {
   LogOut,
   X,
   Trophy,
-  ChevronDown
+  ChevronDown,
+  Clock,
+  Coins
 } from "lucide-react"
+import { CategorySection } from "@/components/ui/category-section"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
@@ -74,6 +78,37 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
     gamesPlayed: 12,
     achievements: 45,
   })
+  const [coins, setCoins] = useState(150)
+
+  const timePacks = [
+    { id: 1, duration: 30, price: 50, label: "30 Minutes" },
+    { id: 2, duration: 60, price: 90, label: "1 Hour" },
+    { id: 3, duration: 120, price: 160, label: "2 Hours" },
+    { id: 4, duration: 180, price: 220, label: "3 Hours" },
+    { id: 5, duration: 300, price: 350, label: "5 Hours" },
+    { id: 6, duration: 480, price: 500, label: "8 Hours" },
+  ]
+
+  const coinPacks = [
+    { id: 1, amount: 100, price: "$5", label: "100 Coins" },
+    { id: 2, amount: 250, price: "$10", label: "250 Coins" },
+    { id: 3, amount: 600, price: "$20", label: "600 Coins" },
+    { id: 4, amount: 1500, price: "$45", label: "1500 Coins" },
+  ]
+
+  const handlePurchaseTimePack = (pack: typeof timePacks[0]) => {
+    if (coins >= pack.price) {
+      setCoins(prev => prev - pack.price)
+      setTimeLeft(prev => prev + pack.duration)
+      console.log(`Purchased ${pack.label} for ${pack.price} coins`)
+    } else {
+      console.log("Not enough coins")
+    }
+  }
+
+  const handlePurchaseCoinPack = (pack: typeof coinPacks[0]) => {
+    console.log(`Purchase ${pack.label} for ${pack.price}`)
+  }
 
   // Timer effect
   useEffect(() => {
@@ -175,13 +210,22 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
 
             {/* User Profile */}
             <div className="flex items-center gap-4">
-              {/* Time Display */}
-              <div className="hidden lg:flex items-center bg-muted rounded-lg px-4 py-2 border border-border">
-                <div className="text-center">
-                  <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-green-600' : timeLeft > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
-                    {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
+              {/* Time & Coins Display */}
+              <div className="hidden lg:flex items-center gap-3">
+                <div className="flex items-center bg-muted rounded-lg px-4 py-2 border border-border">
+                  <div className="text-center">
+                    <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-green-600' : timeLeft > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
+                    </div>
+                    <div className="text-xs text-muted-foreground">Time Left</div>
                   </div>
-                  <div className="text-xs text-muted-foreground">Time Left</div>
+                </div>
+                <div className="flex items-center bg-primary/10 rounded-lg px-4 py-2 border border-primary/20">
+                  <Coins className="w-4 h-4 text-primary mr-2" />
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-primary">{coins}</div>
+                    <div className="text-xs text-muted-foreground">Coins</div>
+                  </div>
                 </div>
               </div>
 
@@ -274,6 +318,70 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8 space-y-8">
+        {/* Coins & Time Packs Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Time Packs */}
+          <CategorySection title="Time Packs" icon={Clock}>
+            {timePacks.map((pack) => (
+              <Card key={pack.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-primary" />
+                    {pack.label}
+                  </CardTitle>
+                  <CardDescription>
+                    {pack.price} Coins
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button 
+                    onClick={() => handlePurchaseTimePack(pack)}
+                    className="w-full"
+                    disabled={coins < pack.price}
+                  >
+                    {coins >= pack.price ? 'Purchase' : 'Not Enough Coins'}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </CategorySection>
+
+          {/* Coin Packs */}
+          <CategorySection title="Coin Packs" icon={Coins}>
+            <Card className="col-span-full bg-primary/10 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Coins className="w-6 h-6 text-primary" />
+                  Your Balance
+                </CardTitle>
+                <div className="text-4xl font-bold text-primary">{coins} Coins</div>
+              </CardHeader>
+            </Card>
+            {coinPacks.map((pack) => (
+              <Card key={pack.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Coins className="w-5 h-5 text-primary" />
+                    {pack.label}
+                  </CardTitle>
+                  <CardDescription>
+                    {pack.price}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button 
+                    onClick={() => handlePurchaseCoinPack(pack)}
+                    className="w-full"
+                    variant="secondary"
+                  >
+                    Buy Now
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </CategorySection>
+        </div>
+
         {/* Recently Played */}
         <div>
           <GameCarousel
