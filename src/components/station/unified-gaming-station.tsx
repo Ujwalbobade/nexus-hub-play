@@ -15,8 +15,10 @@ import {
   Clock,
   Coins,
   Library,
-  Award
+  Award,
+  Menu
 } from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
@@ -165,16 +167,16 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
     <SidebarProvider>
       <div className="min-h-screen w-full flex bg-gradient-to-br from-background via-card to-muted">
         {/* Sidebar Navigation */}
-        <Sidebar className="border-r border-border">
+        <Sidebar className="border-r border-border bg-gradient-to-b from-card to-background">
           <SidebarContent>
             <SidebarGroup>
-              <div className="p-4 border-b border-border">
+              <div className="p-4 border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-secondary shadow-glow">
                     <Gamepad2 className="w-5 h-5 text-primary-foreground" />
                   </div>
                   <div>
-                    <h2 className="font-bold text-foreground">Gaming Hub</h2>
+                    <h2 className="font-bold text-foreground bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Gaming Hub</h2>
                     <p className="text-xs text-muted-foreground">Premium Station</p>
                   </div>
                 </div>
@@ -186,7 +188,7 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
                     <SidebarMenuItem key={item.id}>
                       <SidebarMenuButton
                         onClick={() => setActiveTab(item.id)}
-                        className={activeTab === item.id ? "bg-primary text-primary-foreground" : ""}
+                        className={activeTab === item.id ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-accent" : "hover:bg-muted/50"}
                       >
                         <item.icon className="w-4 h-4" />
                         <span>{item.label}</span>
@@ -204,7 +206,11 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
                     onClick={() => setPlatform("pc")}
                     variant={platform === "pc" ? "default" : "outline"}
                     size="sm"
-                    className="w-full justify-start"
+                    className={`w-full justify-start transition-all ${
+                      platform === "pc" 
+                        ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-accent hover:shadow-glow" 
+                        : ""
+                    }`}
                   >
                     <Monitor className="w-4 h-4 mr-2" />
                     PC Gaming
@@ -213,7 +219,11 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
                     onClick={() => setPlatform("ps5")}
                     variant={platform === "ps5" ? "default" : "outline"}
                     size="sm"
-                    className="w-full justify-start"
+                    className={`w-full justify-start transition-all ${
+                      platform === "ps5" 
+                        ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-accent hover:shadow-glow" 
+                        : ""
+                    }`}
                   >
                     <Zap className="w-4 h-4 mr-2" />
                     PlayStation 5
@@ -227,10 +237,78 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
           {/* Header */}
-          <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-lg">
+          <header className="sticky top-0 z-50 bg-gradient-to-r from-card/95 via-primary/5 to-secondary/5 backdrop-blur-md border-b border-border shadow-lg">
             <div className="px-6 py-4">
               <div className="flex items-center justify-between gap-4">
-                <SidebarTrigger />
+                {/* Logo - Always Visible */}
+                <div className="flex items-center gap-4">
+                  <SidebarTrigger />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-secondary shadow-glow animate-glow">
+                      <Gamepad2 className="w-6 h-6 text-primary-foreground" />
+                    </div>
+                    <div className="hidden sm:block">
+                      <h1 className="font-bold text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Gaming Hub</h1>
+                    </div>
+                  </div>
+
+                  {/* Top Drawer Navigation */}
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <button className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors">
+                        <Menu className="w-5 h-5 text-foreground" />
+                      </button>
+                    </SheetTrigger>
+                    <SheetContent side="top" className="bg-gradient-to-b from-card to-background border-b border-border">
+                      <div className="py-6 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          {navItems.map((item) => (
+                            <button
+                              key={item.id}
+                              onClick={() => setActiveTab(item.id)}
+                              className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${
+                                activeTab === item.id 
+                                  ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-accent' 
+                                  : 'bg-muted/50 text-foreground hover:bg-muted'
+                              }`}
+                            >
+                              <item.icon className="w-6 h-6" />
+                              <span className="text-sm font-medium">{item.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                        
+                        <div className="border-t border-border pt-4">
+                          <div className="text-xs text-muted-foreground mb-3">Platform</div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <button
+                              onClick={() => setPlatform("pc")}
+                              className={`flex items-center justify-center gap-2 p-3 rounded-lg transition-all ${
+                                platform === "pc"
+                                  ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-accent'
+                                  : 'bg-muted/50 text-foreground hover:bg-muted'
+                              }`}
+                            >
+                              <Monitor className="w-4 h-4" />
+                              <span className="text-sm font-medium">PC</span>
+                            </button>
+                            <button
+                              onClick={() => setPlatform("ps5")}
+                              className={`flex items-center justify-center gap-2 p-3 rounded-lg transition-all ${
+                                platform === "ps5"
+                                  ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-accent'
+                                  : 'bg-muted/50 text-foreground hover:bg-muted'
+                              }`}
+                            >
+                              <Zap className="w-4 h-4" />
+                              <span className="text-sm font-medium">PS5</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                </div>
                 
                 {/* Search Bar */}
                 {activeTab === "games" && (
@@ -259,19 +337,20 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
                 {/* Stats & Profile */}
                 <div className="flex items-center gap-4 ml-auto">
                   {/* Time & Coins Display */}
-                  <div className="hidden lg:flex items-center gap-3">
-                    <div className="flex items-center bg-muted rounded-lg px-4 py-2 border border-border">
+                  <div className="hidden md:flex items-center gap-3">
+                    <div className="flex items-center bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg px-4 py-2 border border-accent/30 shadow-card">
+                      <Clock className="w-4 h-4 text-accent mr-2" />
                       <div className="text-center">
-                        <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-green-600' : timeLeft > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+                        <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-secondary' : timeLeft > 10 ? 'text-accent' : 'text-destructive'}`}>
                           {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
                         </div>
                         <div className="text-xs text-muted-foreground">Time Left</div>
                       </div>
                     </div>
-                    <div className="flex items-center bg-primary/10 rounded-lg px-4 py-2 border border-primary/20">
-                      <Coins className="w-4 h-4 text-primary mr-2" />
+                    <div className="flex items-center bg-gradient-to-br from-primary/20 to-secondary/10 rounded-lg px-4 py-2 border border-primary/30 shadow-card">
+                      <Coins className="w-4 h-4 text-secondary mr-2" />
                       <div className="text-center">
-                        <div className="text-lg font-bold text-primary">{coins}</div>
+                        <div className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{coins}</div>
                         <div className="text-xs text-muted-foreground">Coins</div>
                       </div>
                     </div>
@@ -280,16 +359,16 @@ export function UnifiedGamingStation({ onLogout }: UnifiedGamingStationProps) {
                   {/* Profile Dropdown */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="flex items-center gap-3 px-3 py-2 h-auto hover:bg-muted">
-                        <Avatar className="w-10 h-10 border-2 border-primary">
+                      <Button variant="ghost" className="flex items-center gap-3 px-3 py-2 h-auto hover:bg-muted rounded-xl">
+                        <Avatar className="w-10 h-10 border-2 border-primary shadow-glow">
                           <AvatarImage src="/placeholder.svg" alt="User" />
-                          <AvatarFallback className="bg-primary text-primary-foreground font-bold">
+                          <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground font-bold">
                             {user.name.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div className="text-left hidden md:block">
                           <div className="text-sm font-semibold text-foreground">{user.name}</div>
-                          <div className="text-xs text-muted-foreground">Level {user.level}</div>
+                          <div className="text-xs bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Level {user.level}</div>
                         </div>
                         <ChevronDown className="w-4 h-4 text-muted-foreground" />
                       </Button>

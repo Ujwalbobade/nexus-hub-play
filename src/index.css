@@ -8,35 +8,45 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 27% 8%;
-    --foreground: 220 20% 95%;
+    --background: 230 35% 7%;
+    --foreground: 210 20% 98%;
 
-    --card: 220 24% 12%;
-    --card-foreground: 220 20% 95%;
+    --card: 230 30% 11%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 220 24% 12%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 230 30% 11%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 193 100% 50%;
-    --primary-foreground: 220 27% 8%;
+    --primary: 280 90% 65%;
+    --primary-foreground: 210 20% 98%;
 
-    --secondary: 220 20% 18%;
-    --secondary-foreground: 220 20% 85%;
+    --secondary: 195 100% 50%;
+    --secondary-foreground: 230 35% 7%;
 
-    --muted: 220 20% 15%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 230 25% 15%;
+    --muted-foreground: 220 15% 65%;
 
-    --accent: 270 100% 70%;
-    --accent-foreground: 220 27% 8%;
+    --accent: 340 85% 60%;
+    --accent-foreground: 210 20% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 220 20% 95%;
+    --destructive-foreground: 210 20% 98%;
 
-    --border: 220 20% 20%;
-    --input: 220 20% 18%;
-    --ring: 193 100% 50%;
+    --border: 230 20% 22%;
+    --input: 230 25% 16%;
+    --ring: 280 90% 65%;
 
     --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(280 90% 65%), hsl(195 100% 50%));
+    --gradient-card: linear-gradient(145deg, hsl(230 30% 11%), hsl(230 25% 14%));
+    --gradient-accent: linear-gradient(135deg, hsl(340 85% 60%), hsl(280 90% 65%));
+    
+    /* Shadows */
+    --shadow-glow: 0 0 30px hsl(280 90% 65% / 0.3);
+    --shadow-accent: 0 8px 32px hsl(280 90% 65% / 0.25);
+    --shadow-card: 0 4px 16px hsl(0 0% 0% / 0.4);
 
     /* PS5 Gaming theme colors */
     --ps5-blue: 0 112% 60%;
