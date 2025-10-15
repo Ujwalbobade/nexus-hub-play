@@ -5,8 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import AuthScreen from "./components/auth/auth-screen";
-
 import { StationWebSocket } from "./services/StationWebSocket";
 import { AuthProvider } from "@/contextProvider/AuthContext";
 
@@ -37,13 +35,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Auth screen as primary */}
-            <Route path="/" element={<AuthScreen />} />
-
-            {/* Other pages */}
-            <Route path="/home" element={<Index />} />
-
-            {/* Catch-all */}
+            <Route path="/" element={<Index />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

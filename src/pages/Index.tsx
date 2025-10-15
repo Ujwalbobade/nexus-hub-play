@@ -1,26 +1,30 @@
-import { useState } from "react"
 import { LoginScreen } from "@/components/auth/login-screen"
-import  UnifiedGamingStation  from "@/components/station/unified-gaming-station"
-
+import UnifiedGamingStation from "@/components/station/unified-gaming-station"
+import { useAuth } from "@/contextProvider/AuthContext"
 
 const Index = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { user, loginUser, logoutUser } = useAuth()
   
-  const handleLogin = (email: string, password: string) => {
-    // In a real app, you'd validate credentials here
-    console.log("Login attempt:", email)
-    setIsAuthenticated(true)
+  const handleLogin = async (identifier: string, password: string) => {
+    // Mock login - in production, this would call your API
+    const mockUser = {
+      id: 1,
+      username: identifier,
+      email: `${identifier}@gaming.com`,
+      balance: 100,
+      isActive: true,
+      role: "user",
+      fullName: identifier,
+      phoneNumber: null,
+    }
+    loginUser({ token: "mock-token", user: mockUser })
   }
 
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-  }
-
-  if (!isAuthenticated) {
+  if (!user) {
     return <LoginScreen onLogin={handleLogin} />
   }
 
-  return <UnifiedGamingStation onLogout={handleLogout} />
-};
+  return <UnifiedGamingStation onLogout={logoutUser} />
+}
 
-export default Index;
+export default Index

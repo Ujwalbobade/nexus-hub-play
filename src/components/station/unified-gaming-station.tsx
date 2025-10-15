@@ -23,11 +23,13 @@ import {
 } from "lucide-react"
 import { useAuth } from "@/contextProvider/AuthContext"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 
 // ============= TYPES =============
 interface Game {
@@ -377,15 +379,15 @@ function SearchBar({
   setSearchQuery: (query: string) => void
 }) {
   return (
-    <div className="flex-1 max-w-lg">
+    <div className="w-full">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 md:w-5 md:h-5" />
         <input
           type="text"
           placeholder="Search games..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+          className="w-full bg-background border border-border rounded-lg md:rounded-xl pl-9 md:pl-11 pr-4 py-2 md:py-3 text-sm md:text-base text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
         />
         {searchQuery && (
           <button
@@ -534,15 +536,15 @@ function Header({
 }) {
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-card/95 via-primary/5 to-secondary/5 backdrop-blur-md border-b border-border shadow-lg">
-      <div className="px-6 py-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-secondary shadow-glow">
-                <Gamepad2 className="w-6 h-6 text-primary-foreground" />
+      <div className="px-3 sm:px-4 md:px-6 py-3 md:py-4">
+        <div className="flex items-center justify-between gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-primary to-secondary shadow-glow">
+                <Gamepad2 className="w-5 h-5 md:w-6 md:h-6 text-primary-foreground" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="font-bold text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Gaming Hub</h1>
+                <h1 className="font-bold text-base md:text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Nexus Gaming Hub</h1>
               </div>
             </div>
             <MobileNav 
@@ -554,10 +556,12 @@ function Header({
           </div>
           
           {activeTab === "games" && (
-            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <div className="hidden md:block flex-1 max-w-md">
+              <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            </div>
           )}
 
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center gap-2 md:gap-4 ml-auto">
             <StatsDisplay timeLeft={timeLeft} coins={coins} />
             <ProfileDropdown user={user} onLogout={onLogout} />
           </div>
@@ -641,25 +645,26 @@ function TimePacksTabContent({
   onPurchase: (pack: typeof timePacks[0]) => void
 }) {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Clock className="w-8 h-8 text-primary" />
-        <h2 className="text-3xl font-bold text-foreground">Time Packs</h2>
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex items-center gap-2 md:gap-3">
+        <Clock className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground">Time Packs</h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {timePacks.map((pack) => (
-          <Card key={pack.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+          <Card key={pack.id} className="hover:border-primary/50 transition-all cursor-pointer hover:shadow-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Clock className="w-5 h-5 text-primary" />
+              <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                <Clock className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 {pack.label}
               </CardTitle>
-              <CardDescription>{pack.price} Coins</CardDescription>
+              <CardDescription className="text-sm">{pack.price} Coins</CardDescription>
             </CardHeader>
             <CardContent>
               <Button 
                 onClick={() => onPurchase(pack)}
                 className="w-full"
+                size="sm"
                 disabled={coins < pack.price}
               >
                 {coins >= pack.price ? 'Purchase' : 'Not Enough Coins'}
@@ -681,34 +686,37 @@ function CoinsTabContent({
   onPurchase: (pack: typeof coinPacks[0]) => void
 }) {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Coins className="w-8 h-8 text-primary" />
-        <h2 className="text-3xl font-bold text-foreground">Coin Packs</h2>
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex items-center gap-2 md:gap-3">
+        <Coins className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground">Coin Packs</h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="col-span-full bg-primary/10 border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Coins className="w-6 h-6 text-primary" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <Card className="col-span-full bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base md:text-lg flex items-center gap-2">
+              <Coins className="w-5 h-5 md:w-6 md:h-6 text-primary" />
               Your Balance
             </CardTitle>
-            <div className="text-4xl font-bold text-primary">{coins} Coins</div>
+            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              {coins} Coins
+            </div>
           </CardHeader>
         </Card>
         {coinPacks.map((pack) => (
-          <Card key={pack.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+          <Card key={pack.id} className="hover:border-primary/50 transition-all cursor-pointer hover:shadow-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Coins className="w-5 h-5 text-primary" />
+              <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                <Coins className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 {pack.label}
               </CardTitle>
-              <CardDescription>{pack.price}</CardDescription>
+              <CardDescription className="text-sm">{pack.price}</CardDescription>
             </CardHeader>
             <CardContent>
               <Button 
                 onClick={() => onPurchase(pack)}
                 className="w-full"
+                size="sm"
                 variant="secondary"
               >
                 Buy Now
@@ -724,33 +732,33 @@ function CoinsTabContent({
 // ============= ARCADE TAB CONTENT =============
 function ArcadeTabContent() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Arcade</h1>
-        <p className="text-muted-foreground">Compete in tournaments and win prizes</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Arcade</h1>
+        <p className="text-sm md:text-base text-muted-foreground">Compete in tournaments and win prizes</p>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-border hover:border-primary/50 transition-all cursor-pointer">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="border-border hover:border-primary/50 transition-all cursor-pointer hover:shadow-lg">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <Trophy className="w-8 h-8 text-accent" />
-              <Badge variant="secondary">Live</Badge>
+              <Trophy className="w-7 h-7 md:w-8 md:h-8 text-accent" />
+              <Badge variant="secondary" className="text-xs">Live</Badge>
             </div>
-            <CardTitle>Weekly Championship</CardTitle>
-            <CardDescription>Compete for the top spot this week</CardDescription>
+            <CardTitle className="text-base md:text-lg">Weekly Championship</CardTitle>
+            <CardDescription className="text-sm">Compete for the top spot this week</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs md:text-sm">
                 <span className="text-muted-foreground">Prize Pool</span>
                 <span className="font-semibold text-foreground">5,000 Coins</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs md:text-sm">
                 <span className="text-muted-foreground">Participants</span>
                 <span className="font-semibold text-foreground">247</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs md:text-sm">
                 <span className="text-muted-foreground">Ends In</span>
                 <span className="font-semibold text-destructive">2d 5h</span>
               </div>
@@ -774,24 +782,24 @@ function AppsTabContent() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Windows Apps</h1>
-        <p className="text-muted-foreground">Access your favorite applications</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Windows Apps</h1>
+        <p className="text-sm md:text-base text-muted-foreground">Access your favorite applications</p>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {apps.map((app) => (
-          <Card key={app.id} className="border-border hover:border-primary/50 transition-all cursor-pointer group">
+          <Card key={app.id} className="border-border hover:border-primary/50 transition-all cursor-pointer group hover:shadow-lg">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <div className="text-4xl">{app.icon}</div>
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{app.name}</CardTitle>
-                  <Badge variant="outline" className="mt-1">{app.category}</Badge>
+                <div className="text-3xl md:text-4xl">{app.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-base md:text-lg truncate">{app.name}</CardTitle>
+                  <Badge variant="outline" className="mt-1 text-xs">{app.category}</Badge>
                 </div>
               </div>
-              <CardDescription className="mt-2">{app.description}</CardDescription>
+              <CardDescription className="mt-2 text-sm">{app.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full" size="sm">
@@ -825,34 +833,34 @@ function FoodTabContent({ user }: { user: User }) {
     : menuItems.filter(item => item.category === selectedCategory)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Order Food</h1>
-        <p className="text-muted-foreground">Hi {user.name}, hungry? Order from our menu!</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Order Food</h1>
+        <p className="text-sm md:text-base text-muted-foreground">Hi {user.name}, hungry? Order from our menu!</p>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {categories.map((category) => (
           <Button
             key={category}
             variant={selectedCategory === category ? "default" : "outline"}
             size="sm"
             onClick={() => setSelectedCategory(category)}
-            className="capitalize"
+            className="capitalize whitespace-nowrap text-xs md:text-sm"
           >
             {category}
           </Button>
         ))}
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredItems.map((item) => (
-          <Card key={item.id} className="border-border hover:border-primary/50 transition-all">
+          <Card key={item.id} className="border-border hover:border-primary/50 transition-all hover:shadow-lg">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <div className="text-5xl">{item.image}</div>
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{item.name}</CardTitle>
+                <div className="text-4xl md:text-5xl">{item.image}</div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-base md:text-lg truncate">{item.name}</CardTitle>
                   <Badge variant="outline" className="mt-1">{item.category}</Badge>
                 </div>
               </div>
@@ -940,7 +948,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
         setIsOpen={setSidebarOpen}
       />
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <Header
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -954,7 +962,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
           onLogout={handleLogout}
         />
 
-        <main className="flex-1 overflow-auto px-6 py-8 space-y-8">
+        <main className="flex-1 overflow-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 space-y-6 md:space-y-8">
           {activeTab === "games" && (
             <GamesTabContent 
               games={gameData[platform]} 

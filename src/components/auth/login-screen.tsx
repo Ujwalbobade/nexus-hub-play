@@ -36,36 +36,36 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ps5-black via-ps5-surface to-ps5-card flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-ps5-black via-ps5-surface to-ps5-card flex items-center justify-center p-4 md:p-6">
+      <div className="w-full max-w-md space-y-6 md:space-y-8">
         {/* Logo */}
-        <div className="text-center space-y-4">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-ps5-accent to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <Gamepad2 className="w-10 h-10 text-white" />
+        <div className="text-center space-y-3 md:space-y-4">
+          <div className="mx-auto w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-ps5-accent to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <Gamepad2 className="w-8 h-8 md:w-10 md:h-10 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-ps5-white">Gaming Station</h1>
-            <p className="text-ps5-white/70 mt-2">Welcome back, gamer!</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-ps5-white">Nexus Gaming Hub</h1>
+            <p className="text-sm md:text-base text-ps5-white/70 mt-2">Welcome back, gamer!</p>
           </div>
         </div>
 
         {/* Login Form */}
-        <Card className="bg-ps5-card/80 backdrop-blur-sm border-ps5-secondary/30 p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <Card className="bg-ps5-card/80 backdrop-blur-sm border-ps5-secondary/30 p-6 md:p-8 shadow-2xl">
+          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
             {/* Identifier Field */}
             <div className="space-y-2">
-              <Label htmlFor="identifier" className="text-ps5-white/90">
+              <Label htmlFor="identifier" className="text-ps5-white/90 text-sm md:text-base">
                 Username or Email
               </Label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-5 h-5" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
                 <Input
                   id="identifier"
                   type="text"
                   placeholder="Enter your username or email"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  className="pl-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent"
+                  className="pl-10 md:pl-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
                   required
                 />
               </div>
@@ -73,18 +73,18 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-ps5-white/90">
+              <Label htmlFor="password" className="text-ps5-white/90 text-sm md:text-base">
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-12 pr-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent"
+                  className="pl-10 md:pl-12 pr-10 md:pr-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
                   required
                 />
                 <button
@@ -93,9 +93,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 hover:text-ps5-accent transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeOff className="w-4 h-4 md:w-5 md:h-5" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-4 h-4 md:w-5 md:h-5" />
                   )}
                 </button>
               </div>
@@ -105,7 +105,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             <Button
               type="submit"
               disabled={isLoading || !identifier || !password}
-              className="w-full bg-ps5-accent hover:bg-ps5-accent/90 text-white font-medium py-3 text-base shadow-lg hover:shadow-[0_8px_30px_hsl(0_112%_60%_/_0.3)] transition-all duration-200"
+              className="w-full bg-ps5-accent hover:bg-ps5-accent/90 text-white font-medium py-2.5 md:py-3 text-sm md:text-base shadow-lg hover:shadow-[0_8px_30px_hsl(0_112%_60%_/_0.3)] transition-all duration-200"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
@@ -118,7 +118,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             </Button>
 
             {/* Divider */}
-            <div className="relative my-6">
+            <div className="relative my-5 md:my-6">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-ps5-secondary/30" />
               </div>
@@ -133,23 +133,23 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               onClick={handleGuestLogin}
               disabled={isLoading}
               variant="outline"
-              className="w-full border-ps5-secondary/50 text-ps5-white hover:bg-ps5-surface/50 hover:border-ps5-accent/50"
+              className="w-full border-ps5-secondary/50 text-ps5-white hover:bg-ps5-surface/50 hover:border-ps5-accent/50 text-sm md:text-base"
             >
               Continue as Guest
             </Button>
           </form>
 
           {/* Footer */}
-          <div className="mt-6 text-center text-sm text-ps5-white/50">
+          <div className="mt-5 md:mt-6 text-center text-xs md:text-sm text-ps5-white/50">
             <p>Demo credentials: any username or email + password</p>
           </div>
         </Card>
 
         {/* Background Animation */}
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-ps5-accent/20 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-blue-600/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-ps5-accent/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/4 left-1/4 w-24 h-24 md:w-32 md:h-32 bg-ps5-accent/20 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-1/4 right-1/4 w-32 h-32 md:w-40 md:h-40 bg-blue-600/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 right-1/3 w-20 h-20 md:w-24 md:h-24 bg-ps5-accent/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '2s' }} />
         </div>
       </div>
     </div>
