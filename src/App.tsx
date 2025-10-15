@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import AuthScreen from "./components/auth/auth-screen";
 
 import { StationWebSocket } from "./services/StationWebSocket";
+import { AuthProvider } from "@/contextProvider/AuthContext";
 
 const stationId = "station-001";
 const stationWS = new StationWebSocket(stationId);
@@ -24,29 +25,31 @@ setInterval(() => {
     gpuTemperature: Math.random() * 100,
     networkLatency: Math.floor(Math.random() * 200),
   });
-}, 10000);// ⬅️ import your AuthScreen
+}, 10000);
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Auth screen as primary */}
-     \<Route path="/" element={<AuthScreen />} />
-          
-          {/* Other pages */}
-          <Route path="/home" element={<Index />} />
+  <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Auth screen as primary */}
+            <Route path="/" element={<AuthScreen />} />
 
-          {/* Catch-all */}
-          <Route path="*" element={<NotFound />} />
-        </Routes> 
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+            {/* Other pages */}
+            <Route path="/home" element={<Index />} />
+
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </AuthProvider>
 );
 
 export default App;
