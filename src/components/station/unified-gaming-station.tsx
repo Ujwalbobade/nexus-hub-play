@@ -17,8 +17,11 @@ import {
   Menu,
   Play,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  AppWindow,
+  Utensils
 } from "lucide-react"
+import { useAuth } from "@/contextProvider/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -49,7 +52,7 @@ interface User {
 }
 
 type Platform = "pc" | "ps5"
-type ActiveTab = "games" | "timepacks" | "coins" | "arcade"
+type ActiveTab = "games" | "timepacks" | "coins" | "arcade" | "apps" | "food"
 
 // ============= DATA =============
 const gameData = {
@@ -75,6 +78,8 @@ const navItems = [
   { id: "timepacks" as const, label: "Time Packs", icon: Clock },
   { id: "coins" as const, label: "Coins", icon: Coins },
   { id: "arcade" as const, label: "Arcade", icon: Award },
+  { id: "apps" as const, label: "Apps", icon: AppWindow },
+  { id: "food" as const, label: "Food", icon: Utensils },
 ]
 
 const timePacks = [
@@ -719,35 +724,177 @@ function CoinsTabContent({
 // ============= ARCADE TAB CONTENT =============
 function ArcadeTabContent() {
   return (
-    <div className="text-center py-16">
-      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-        <Award className="w-8 h-8 text-primary" />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Arcade</h1>
+        <p className="text-muted-foreground">Compete in tournaments and win prizes</p>
       </div>
-      <h3 className="text-2xl font-bold text-foreground mb-2">Arcade Competitions</h3>
-      <p className="text-muted-foreground mb-6">
-        Compete with other players and win amazing prizes
-      </p>
-      <Badge variant="secondary" className="text-sm">Coming Soon</Badge>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="border-border hover:border-primary/50 transition-all cursor-pointer">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <Trophy className="w-8 h-8 text-accent" />
+              <Badge variant="secondary">Live</Badge>
+            </div>
+            <CardTitle>Weekly Championship</CardTitle>
+            <CardDescription>Compete for the top spot this week</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Prize Pool</span>
+                <span className="font-semibold text-foreground">5,000 Coins</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Participants</span>
+                <span className="font-semibold text-foreground">247</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Ends In</span>
+                <span className="font-semibold text-destructive">2d 5h</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+// ============= APPS TAB CONTENT =============
+function AppsTabContent() {
+  const apps = [
+    { id: 1, name: "Google Chrome", description: "Fast and secure web browser", icon: "🌐", category: "Browser" },
+    { id: 2, name: "Logitech Mouse", description: "Configure your Logitech devices", icon: "🖱️", category: "Utility" },
+    { id: 3, name: "Discord", description: "Voice and chat for gamers", icon: "💬", category: "Communication" },
+    { id: 4, name: "Spotify", description: "Music streaming service", icon: "🎵", category: "Entertainment" },
+    { id: 5, name: "OBS Studio", description: "Streaming and recording", icon: "🎥", category: "Streaming" },
+    { id: 6, name: "Visual Studio Code", description: "Code editor", icon: "💻", category: "Development" },
+  ]
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Windows Apps</h1>
+        <p className="text-muted-foreground">Access your favorite applications</p>
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {apps.map((app) => (
+          <Card key={app.id} className="border-border hover:border-primary/50 transition-all cursor-pointer group">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="text-4xl">{app.icon}</div>
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{app.name}</CardTitle>
+                  <Badge variant="outline" className="mt-1">{app.category}</Badge>
+                </div>
+              </div>
+              <CardDescription className="mt-2">{app.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" size="sm">
+                <Play className="w-4 h-4 mr-2" />
+                Launch App
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ============= FOOD TAB CONTENT =============
+function FoodTabContent({ user }: { user: User }) {
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  
+  const menuItems = [
+    { id: 1, name: "Classic Burger", price: 150, category: "Burgers", image: "🍔", description: "Juicy beef patty with cheese" },
+    { id: 2, name: "Margherita Pizza", price: 200, category: "Pizza", image: "🍕", description: "Fresh mozzarella and basil" },
+    { id: 3, name: "Chicken Wings", price: 120, category: "Snacks", image: "🍗", description: "Crispy fried wings" },
+    { id: 4, name: "French Fries", price: 80, category: "Snacks", image: "🍟", description: "Golden crispy fries" },
+    { id: 5, name: "Coca Cola", price: 50, category: "Drinks", image: "🥤", description: "Ice cold soda" },
+    { id: 6, name: "Energy Drink", price: 70, category: "Drinks", image: "⚡", description: "Boost your energy" },
+  ]
+
+  const categories = ["all", "Burgers", "Pizza", "Snacks", "Drinks"]
+  const filteredItems = selectedCategory === "all" 
+    ? menuItems 
+    : menuItems.filter(item => item.category === selectedCategory)
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Order Food</h1>
+        <p className="text-muted-foreground">Hi {user.name}, hungry? Order from our menu!</p>
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {categories.map((category) => (
+          <Button
+            key={category}
+            variant={selectedCategory === category ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedCategory(category)}
+            className="capitalize"
+          >
+            {category}
+          </Button>
+        ))}
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {filteredItems.map((item) => (
+          <Card key={item.id} className="border-border hover:border-primary/50 transition-all">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="text-5xl">{item.image}</div>
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{item.name}</CardTitle>
+                  <Badge variant="outline" className="mt-1">{item.category}</Badge>
+                </div>
+              </div>
+              <CardDescription className="mt-2">{item.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <Coins className="w-4 h-4 text-secondary" />
+                  <span className="font-bold text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    {item.price}
+                  </span>
+                </div>
+                <Button size="sm" className="gap-1">
+                  Order Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }
 
 // ============= MAIN COMPONENT =============
 export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => void }) {
+  const { user: authUser } = useAuth()
   const [platform, setPlatform] = useState<Platform>("pc")
   const [searchQuery, setSearchQuery] = useState("")
   const [timeLeft, setTimeLeft] = useState(120)
   const [activeTab, setActiveTab] = useState<ActiveTab>("games")
   const [coins, setCoins] = useState(150)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [user] = useState<User>({
-    name: "Player One",
-    email: "player@example.com",
+  const user: User = {
+    name: authUser?.username || authUser?.email?.split('@')[0] || "Gamer",
+    email: authUser?.email || "user@example.com",
     level: 15,
     totalPlaytime: 2847,
     gamesPlayed: 12,
     achievements: 45,
-  })
+  }
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -832,6 +979,10 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
           )}
 
           {activeTab === "arcade" && <ArcadeTabContent />}
+
+          {activeTab === "apps" && <AppsTabContent />}
+
+          {activeTab === "food" && <FoodTabContent user={user} />}
         </main>
       </div>
     </div>

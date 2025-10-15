@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { LoginScreen } from "@/components/auth/login-screen"
-import { UnifiedGamingStation } from "@/components/station/unified-gaming-station"
+import UnifiedGamingStation from "@/components/station/unified-gaming-station"
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
