@@ -4,13 +4,25 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { User } from "../types"
+import { PaymentDialog } from "../PaymentDialog"
 
 interface FoodTabProps {
   user: User
 }
 
+type MenuItem = {
+  id: number
+  name: string
+  price: number
+  category: string
+  image: string
+  description: string
+}
+
 export function FoodTab({ user }: FoodTabProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  const [paymentOpen, setPaymentOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   
   const menuItems = [
     { id: 1, name: "Classic Burger", price: 150, category: "Burgers", image: "🍔", description: "Juicy beef patty with cheese" },
@@ -25,6 +37,15 @@ export function FoodTab({ user }: FoodTabProps) {
   const filteredItems = selectedCategory === "all" 
     ? menuItems 
     : menuItems.filter(item => item.category === selectedCategory)
+
+  const handleOrderClick = (item: MenuItem) => {
+    setSelectedItem(item)
+    setPaymentOpen(true)
+  }
+
+  const handlePaymentSuccess = () => {
+    // Handle successful payment (e.g., add to order history)
+  }
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -68,7 +89,7 @@ export function FoodTab({ user }: FoodTabProps) {
                     {item.price}
                   </span>
                 </div>
-                <Button size="sm" className="gap-1">
+                <Button size="sm" className="gap-1" onClick={() => handleOrderClick(item)}>
                   Order Now
                 </Button>
               </div>
@@ -76,6 +97,16 @@ export function FoodTab({ user }: FoodTabProps) {
           </Card>
         ))}
       </div>
+
+      {selectedItem && (
+        <PaymentDialog
+          open={paymentOpen}
+          onOpenChange={setPaymentOpen}
+          amount={`₹${selectedItem.price}`}
+          itemName={selectedItem.name}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   )
 }

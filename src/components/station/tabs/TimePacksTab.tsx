@@ -1,7 +1,9 @@
+import { useState } from "react"
 import { Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { timePacks } from "../data"
+import { PaymentDialog } from "../PaymentDialog"
 
 interface TimePacksTabProps {
   coins: number
@@ -9,6 +11,22 @@ interface TimePacksTabProps {
 }
 
 export function TimePacksTab({ coins, onPurchase }: TimePacksTabProps) {
+  const [paymentOpen, setPaymentOpen] = useState(false)
+  const [selectedPack, setSelectedPack] = useState<typeof timePacks[0] | null>(null)
+
+  const handlePurchaseClick = (pack: typeof timePacks[0]) => {
+    if (coins < pack.price) {
+      return
+    }
+    setSelectedPack(pack)
+    setPaymentOpen(true)
+  }
+
+  const handlePaymentSuccess = () => {
+    if (selectedPack) {
+      onPurchase(selectedPack)
+    }
+  }
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex items-center gap-2 md:gap-3">
@@ -27,7 +45,7 @@ export function TimePacksTab({ coins, onPurchase }: TimePacksTabProps) {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => onPurchase(pack)}
+                onClick={() => handlePurchaseClick(pack)}
                 className="w-full"
                 size="sm"
                 disabled={coins < pack.price}
@@ -38,6 +56,16 @@ export function TimePacksTab({ coins, onPurchase }: TimePacksTabProps) {
           </Card>
         ))}
       </div>
+
+      {selectedPack && (
+        <PaymentDialog
+          open={paymentOpen}
+          onOpenChange={setPaymentOpen}
+          amount={`${selectedPack.price} Coins`}
+          itemName={selectedPack.label}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   )
 }

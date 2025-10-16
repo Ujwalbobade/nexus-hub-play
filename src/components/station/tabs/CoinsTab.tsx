@@ -1,7 +1,9 @@
+import { useState } from "react"
 import { Coins } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { coinPacks } from "../data"
+import { PaymentDialog } from "../PaymentDialog"
 
 interface CoinsTabProps {
   coins: number
@@ -9,6 +11,19 @@ interface CoinsTabProps {
 }
 
 export function CoinsTab({ coins, onPurchase }: CoinsTabProps) {
+  const [paymentOpen, setPaymentOpen] = useState(false)
+  const [selectedPack, setSelectedPack] = useState<typeof coinPacks[0] | null>(null)
+
+  const handlePurchaseClick = (pack: typeof coinPacks[0]) => {
+    setSelectedPack(pack)
+    setPaymentOpen(true)
+  }
+
+  const handlePaymentSuccess = () => {
+    if (selectedPack) {
+      onPurchase(selectedPack)
+    }
+  }
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex items-center gap-2 md:gap-3">
@@ -38,7 +53,7 @@ export function CoinsTab({ coins, onPurchase }: CoinsTabProps) {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => onPurchase(pack)}
+                onClick={() => handlePurchaseClick(pack)}
                 className="w-full"
                 size="sm"
                 variant="secondary"
@@ -49,6 +64,16 @@ export function CoinsTab({ coins, onPurchase }: CoinsTabProps) {
           </Card>
         ))}
       </div>
+
+      {selectedPack && (
+        <PaymentDialog
+          open={paymentOpen}
+          onOpenChange={setPaymentOpen}
+          amount={selectedPack.price}
+          itemName={selectedPack.label}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   )
 }
