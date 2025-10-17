@@ -37,8 +37,8 @@ export const timePacks = [
 ]
 
 export const coinPacks = [
-  { id: 1, amount: 100, price: "$5", label: "100 Coins" },
-  { id: 2, amount: 250, price: "$10", label: "250 Coins" },
-  { id: 3, amount: 600, price: "$20", label: "600 Coins" },
-  { id: 4, amount: 1500, price: "$45", label: "1500 Coins" },
+  { id: 1, amount: 100, price: "₹50", label: "100 Coins" },
+  { id: 2, amount: 250, price: "₹100", label: "250 Coins" },
+  { id: 3, amount: 600, price: "₹200", label: "600 Coins" },
+  { id: 4, amount: 1500, price: "₹450", label: "1500 Coins" },
 ]

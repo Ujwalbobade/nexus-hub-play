@@ -57,6 +57,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // RGB colors for special effects
+        "rgb-primary": "rgb(var(--rgb-primary))",
+        "rgb-secondary": "rgb(var(--rgb-secondary))",
+        "rgb-accent": "rgb(var(--rgb-accent))",
+        "rgb-success": "rgb(var(--rgb-success))",
+        "rgb-warning": "rgb(var(--rgb-warning))",
+        "rgb-error": "rgb(var(--rgb-error))",
         // PS5 Gaming theme colors
         "ps5-blue": "hsl(var(--ps5-blue))",
         "ps5-white": "hsl(var(--ps5-white))",

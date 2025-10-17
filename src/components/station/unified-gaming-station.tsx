@@ -21,6 +21,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
   const [coins, setCoins] = useState(150)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeOrders, setActiveOrders] = useState(0)
+  const [activeFoodOrders, setActiveFoodOrders] = useState(0)
   
   const user: User = {
     name: authUser?.username || authUser?.email?.split('@')[0] || "Gamer",
@@ -105,6 +106,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
           user={user}
           onLogout={handleLogout}
           activeOrders={activeOrders}
+          activeFoodOrders={activeFoodOrders}
         />
         
         <main className="flex-1 overflow-y-auto">
@@ -125,7 +127,17 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
             )}
             {activeTab === "arcade" && <ArcadeTab />}
             {activeTab === "apps" && <AppsTab />}
-            {activeTab === "food" && <FoodTab user={user} />}
+          {activeTab === "food" && (
+            <FoodTab 
+              user={user} 
+              onFoodOrderPlaced={() => {
+                setActiveFoodOrders(prev => prev + 1)
+                setTimeout(() => {
+                  setActiveFoodOrders(prev => Math.max(0, prev - 1))
+                }, 300000) // 5 minutes
+              }}
+            />
+          )}
           </div>
         </main>
       </div>

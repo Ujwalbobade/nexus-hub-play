@@ -5,9 +5,11 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { User } from "../types"
 import { PaymentDialog } from "../PaymentDialog"
+import { toast } from "sonner"
 
 interface FoodTabProps {
   user: User
+  onFoodOrderPlaced?: () => void
 }
 
 type MenuItem = {
@@ -19,7 +21,7 @@ type MenuItem = {
   description: string
 }
 
-export function FoodTab({ user }: FoodTabProps) {
+export function FoodTab({ user, onFoodOrderPlaced }: FoodTabProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
@@ -44,7 +46,10 @@ export function FoodTab({ user }: FoodTabProps) {
   }
 
   const handlePaymentSuccess = () => {
-    // Handle successful payment (e.g., add to order history)
+    onFoodOrderPlaced?.()
+    toast.success(`Order placed! Your ${selectedItem?.name} will be ready in 5 minutes.`, {
+      duration: 5000,
+    })
   }
 
   return (

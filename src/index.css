@@ -48,6 +48,14 @@ All colors MUST be HSL.
     --shadow-accent: 0 8px 32px hsl(280 90% 65% / 0.25);
     --shadow-card: 0 4px 16px hsl(0 0% 0% / 0.4);
 
+    /* RGB Colors for special effects */
+    --rgb-primary: 198 51 247;
+    --rgb-secondary: 0 230 255;
+    --rgb-accent: 244 63 138;
+    --rgb-success: 34 197 94;
+    --rgb-warning: 234 179 8;
+    --rgb-error: 239 68 68;
+
     /* PS5 Gaming theme colors */
     --ps5-blue: 0 112% 60%;
     --ps5-white: 0 0% 95%;
