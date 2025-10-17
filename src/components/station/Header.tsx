@@ -1,9 +1,10 @@
-import { Gamepad2 } from "lucide-react"
+import { Gamepad2, ShoppingBag } from "lucide-react"
 import { MobileNav } from "./MobileNav"
 import { SearchBar } from "./SearchBar"
 import { StatsDisplay } from "./StatsDisplay"
 import { ProfileDropdown } from "./ProfileDropdown"
 import { ActiveTab, Platform, User } from "./types"
+import { Badge } from "@/components/ui/badge"
 
 interface HeaderProps {
   activeTab: ActiveTab
@@ -16,6 +17,7 @@ interface HeaderProps {
   coins: number
   user: User
   onLogout: () => void
+  activeOrders?: number
 }
 
 export function Header({ 
@@ -28,7 +30,8 @@ export function Header({
   timeLeft, 
   coins, 
   user, 
-  onLogout 
+  onLogout,
+  activeOrders = 0
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-card/95 via-primary/5 to-secondary/5 backdrop-blur-md border-b border-border shadow-lg">
@@ -58,6 +61,17 @@ export function Header({
           )}
 
           <div className="flex items-center gap-2 md:gap-4 ml-auto">
+            {activeOrders > 0 && (
+              <div className="relative">
+                <div className="flex items-center bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg px-3 py-2 border border-accent/30 shadow-card">
+                  <ShoppingBag className="w-4 h-4 text-accent mr-2" />
+                  <div className="hidden sm:block text-center">
+                    <div className="text-sm font-bold text-accent">Active Orders</div>
+                  </div>
+                  <Badge className="ml-2 bg-accent text-accent-foreground">{activeOrders}</Badge>
+                </div>
+              </div>
+            )}
             <StatsDisplay timeLeft={timeLeft} coins={coins} />
             <ProfileDropdown user={user} onLogout={onLogout} />
           </div>

@@ -20,6 +20,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
   const [activeTab, setActiveTab] = useState<ActiveTab>("games")
   const [coins, setCoins] = useState(150)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [activeOrders, setActiveOrders] = useState(0)
   
   const user: User = {
     name: authUser?.username || authUser?.email?.split('@')[0] || "Gamer",
@@ -52,12 +53,24 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
     }
     setCoins(prev => prev - pack.price)
     setTimeLeft(prev => prev + pack.duration)
+    setActiveOrders(prev => prev + 1)
     toast.success(`Purchased ${pack.label}!`)
+    
+    setTimeout(() => {
+      setActiveOrders(prev => prev - 1)
+      toast.success("Order completed!")
+    }, 5000)
   }
 
   const handleCoinPackPurchase = (pack: typeof coinPacks[0]) => {
     setCoins(prev => prev + pack.amount)
+    setActiveOrders(prev => prev + 1)
     toast.success(`Purchased ${pack.label}!`)
+    
+    setTimeout(() => {
+      setActiveOrders(prev => prev - 1)
+      toast.success("Order completed!")
+    }, 5000)
   }
 
   const handleLogout = () => {
@@ -91,6 +104,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
           coins={coins}
           user={user}
           onLogout={handleLogout}
+          activeOrders={activeOrders}
         />
         
         <main className="flex-1 overflow-y-auto">

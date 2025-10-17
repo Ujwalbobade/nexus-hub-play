@@ -1,4 +1,5 @@
 import { User as UserIcon, Settings, Trophy, LogOut, ChevronDown } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +12,8 @@ interface ProfileDropdownProps {
 }
 
 export function ProfileDropdown({ user, onLogout }: ProfileDropdownProps) {
+  const navigate = useNavigate()
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -67,15 +70,15 @@ export function ProfileDropdown({ user, onLogout }: ProfileDropdownProps) {
         </div>
         
         <div className="p-2">
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/profile")}>
             <UserIcon className="w-4 h-4 mr-3" />
             View Profile
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/achievements")}>
             <Trophy className="w-4 h-4 mr-3" />
             Achievements
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
             <Settings className="w-4 h-4 mr-3" />
             Settings
           </DropdownMenuItem>
