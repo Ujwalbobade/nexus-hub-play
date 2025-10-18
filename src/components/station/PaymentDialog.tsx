@@ -18,8 +18,8 @@ interface PaymentDialogProps {
   onOpenChange: (open: boolean) => void
   amount: number | string
   itemName: string
-  customerName: string
-  customerPhone: string
+  customerName?: string
+  customerPhone?: string
   onPaymentSuccess: () => void
 }
 
@@ -226,19 +226,11 @@ export function PaymentDialog({
                 </>
               ) : (
                 <Button
-                  onClick={() => {
-                    setPaymentSuccess(true)
-                    toast.success(`Payment successful for ${itemName}!`)
-                    setTimeout(() => {
-                      onPaymentSuccess()
-                      onOpenChange(false)
-                      setPaymentSuccess(false)
-                      setQrData(null)
-                    }, 2000)
-                  }}
+                  variant="outline"
+                  onClick={handleClose}
                   className="w-full"
                 >
-                  I’ve Completed Payment
+                  Cancel Payment
                 </Button>
               )}
             </DialogFooter>
