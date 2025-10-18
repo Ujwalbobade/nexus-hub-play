@@ -6,18 +6,14 @@ import { timePacks } from "../data"
 import { PaymentDialog } from "../PaymentDialog"
 
 interface TimePacksTabProps {
-  coins: number
   onPurchase: (pack: typeof timePacks[0]) => void
 }
 
-export function TimePacksTab({ coins, onPurchase }: TimePacksTabProps) {
+export function TimePacksTab({ onPurchase }: TimePacksTabProps) {
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [selectedPack, setSelectedPack] = useState<typeof timePacks[0] | null>(null)
 
   const handlePurchaseClick = (pack: typeof timePacks[0]) => {
-    if (coins < pack.price) {
-      return
-    }
     setSelectedPack(pack)
     setPaymentOpen(true)
   }
@@ -41,16 +37,17 @@ export function TimePacksTab({ coins, onPurchase }: TimePacksTabProps) {
                 <Clock className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 {pack.label}
               </CardTitle>
-              <CardDescription className="text-sm">{pack.price} Coins</CardDescription>
+              <CardDescription className="text-sm">
+                {pack.price} • Get {pack.bonusCoins} bonus coins
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Button 
                 onClick={() => handlePurchaseClick(pack)}
                 className="w-full"
                 size="sm"
-                disabled={coins < pack.price}
               >
-                {coins >= pack.price ? 'Purchase' : 'Not Enough Coins'}
+                Buy Now
               </Button>
             </CardContent>
           </Card>
@@ -61,8 +58,8 @@ export function TimePacksTab({ coins, onPurchase }: TimePacksTabProps) {
         <PaymentDialog
           open={paymentOpen}
           onOpenChange={setPaymentOpen}
-          amount={`${selectedPack.price} Coins`}
-          itemName={selectedPack.label}
+          amount={selectedPack.price}
+          itemName={`${selectedPack.label} + ${selectedPack.bonusCoins} Bonus Coins`}
           onPaymentSuccess={handlePaymentSuccess}
         />
       )}

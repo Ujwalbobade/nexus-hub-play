@@ -34,7 +34,15 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(prev => Math.max(0, prev - 1))
+      setTimeLeft(prev => {
+        const newTime = Math.max(0, prev - 1)
+        // Award coins for every 30 minutes played
+        if (prev > 0 && prev % 30 === 0) {
+          setCoins(c => c + 5)
+          toast.success("🎁 Earned 5 coins for playtime!")
+        }
+        return newTime
+      })
     }, 60000)
     return () => clearInterval(timer)
   }, [])
@@ -48,18 +56,14 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
   }
 
   const handleTimePackPurchase = (pack: typeof timePacks[0]) => {
-    if (coins < pack.price) {
-      toast.error("Not enough coins!")
-      return
-    }
-    setCoins(prev => prev - pack.price)
     setTimeLeft(prev => prev + pack.duration)
+    setCoins(prev => prev + pack.bonusCoins)
     setActiveOrders(prev => prev + 1)
-    toast.success(`Purchased ${pack.label}!`)
+    toast.success(`Purchased ${pack.label}! +${pack.bonusCoins} bonus coins`)
     
     setTimeout(() => {
       setActiveOrders(prev => prev - 1)
-      toast.success("Order completed!")
+      toast.success("Time pack activated!")
     }, 5000)
   }
 
@@ -120,7 +124,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
               />
             )}
             {activeTab === "timepacks" && (
-              <TimePacksTab coins={coins} onPurchase={handleTimePackPurchase} />
+              <TimePacksTab onPurchase={handleTimePackPurchase} />
             )}
             {activeTab === "coins" && (
               <CoinsTab coins={coins} onPurchase={handleCoinPackPurchase} />

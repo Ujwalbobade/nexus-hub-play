@@ -28,12 +28,12 @@ export const navItems = [
 ]
 
 export const timePacks = [
-  { id: 1, duration: 30, price: 50, label: "30 Minutes" },
-  { id: 2, duration: 60, price: 90, label: "1 Hour" },
-  { id: 3, duration: 120, price: 160, label: "2 Hours" },
-  { id: 4, duration: 180, price: 220, label: "3 Hours" },
-  { id: 5, duration: 300, price: 350, label: "5 Hours" },
-  { id: 6, duration: 480, price: 500, label: "8 Hours" },
+  { id: 1, duration: 30, price: "₹30", priceValue: 30, bonusCoins: 10, label: "30 Minutes" },
+  { id: 2, duration: 60, price: "₹50", priceValue: 50, bonusCoins: 20, label: "1 Hour" },
+  { id: 3, duration: 120, price: "₹90", priceValue: 90, bonusCoins: 40, label: "2 Hours" },
+  { id: 4, duration: 180, price: "₹120", priceValue: 120, bonusCoins: 60, label: "3 Hours" },
+  { id: 5, duration: 300, price: "₹180", priceValue: 180, bonusCoins: 100, label: "5 Hours" },
+  { id: 6, duration: 480, price: "₹250", priceValue: 250, bonusCoins: 150, label: "8 Hours" },
 ]
 
 export const coinPacks = [
