@@ -78,6 +78,16 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
     }, 5000)
   }
 
+  const handleConvertCoins = () => {
+    if (coins >= 100) {
+      setCoins(prev => prev - 100)
+      setTimeLeft(prev => prev + 30)
+      toast.success("Converted 100 coins to 30 minutes!")
+    } else {
+      toast.error("Not enough coins! Need 100 coins.")
+    }
+  }
+
   const handleLogout = () => {
     if (onLogout) {
       onLogout()
@@ -111,6 +121,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
           onLogout={handleLogout}
           activeOrders={activeOrders}
           activeFoodOrders={activeFoodOrders}
+          onConvertCoins={handleConvertCoins}
         />
         
         <main className="flex-1 overflow-y-auto">

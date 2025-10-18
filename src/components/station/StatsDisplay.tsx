@@ -1,11 +1,19 @@
-import { Clock, Coins } from "lucide-react"
+import { Clock, Coins, ArrowRightLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface StatsDisplayProps {
   timeLeft: number
   coins: number
+  onConvertCoins?: () => void
 }
 
-export function StatsDisplay({ timeLeft, coins }: StatsDisplayProps) {
+export function StatsDisplay({ timeLeft, coins, onConvertCoins }: StatsDisplayProps) {
   return (
     <div className="hidden md:flex items-center gap-3">
       <div className="flex items-center bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg px-4 py-2 border border-accent/30 shadow-card">
@@ -24,6 +32,25 @@ export function StatsDisplay({ timeLeft, coins }: StatsDisplayProps) {
           <div className="text-xs text-muted-foreground">Coins</div>
         </div>
       </div>
+      {onConvertCoins && coins >= 100 && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onConvertCoins}
+                className="h-auto px-3 py-2 border-primary/50 hover:bg-primary/10"
+              >
+                <ArrowRightLeft className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Convert 100 coins to 30 minutes</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
     </div>
   )
 }
