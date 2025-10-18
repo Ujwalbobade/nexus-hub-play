@@ -1,79 +1,104 @@
-import { useState } from "react"
-import { Coins } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Coins, Clock, ArrowRightLeft } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { coinPacks } from "../data"
-import { PaymentDialog } from "../PaymentDialog"
+import { Button } from "@/components/ui/button"
 
 interface CoinsTabProps {
   coins: number
-  onPurchase: (pack: typeof coinPacks[0]) => void
+  onConvertCoins: () => void
 }
 
-export function CoinsTab({ coins, onPurchase }: CoinsTabProps) {
-  const [paymentOpen, setPaymentOpen] = useState(false)
-  const [selectedPack, setSelectedPack] = useState<typeof coinPacks[0] | null>(null)
+export function CoinsTab({ coins, onConvertCoins }: CoinsTabProps) {
+  const canConvert = coins >= 100
 
-  const handlePurchaseClick = (pack: typeof coinPacks[0]) => {
-    setSelectedPack(pack)
-    setPaymentOpen(true)
-  }
-
-  const handlePaymentSuccess = () => {
-    if (selectedPack) {
-      onPurchase(selectedPack)
-    }
-  }
   return (
-    <div className="space-y-4 md:space-y-6">
-      <div className="flex items-center gap-2 md:gap-3">
-        <Coins className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">Coin Packs</h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        <Card className="col-span-full bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base md:text-lg flex items-center gap-2">
-              <Coins className="w-5 h-5 md:w-6 md:h-6 text-primary" />
-              Your Balance
-            </CardTitle>
-            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {coins} Coins
-            </div>
-          </CardHeader>
-        </Card>
-        {coinPacks.map((pack) => (
-          <Card key={pack.id} className="hover:border-primary/50 transition-all cursor-pointer hover:shadow-lg">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base md:text-lg flex items-center gap-2">
-                <Coins className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-                {pack.label}
-              </CardTitle>
-              <CardDescription className="text-sm">{pack.price}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={() => handlePurchaseClick(pack)}
-                className="w-full"
-                size="sm"
-                variant="secondary"
-              >
-                Buy Now
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Coins Balance</h2>
+          <p className="text-muted-foreground">Earn coins through playtime and time pack purchases</p>
+        </div>
       </div>
 
-      {selectedPack && (
-        <PaymentDialog
-          open={paymentOpen}
-          onOpenChange={setPaymentOpen}
-          amount={selectedPack.price}
-          itemName={selectedPack.label}
-          onPaymentSuccess={handlePaymentSuccess}
-        />
-      )}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="bg-gradient-to-br from-primary/20 to-secondary/10 border-primary/30">
+          <CardHeader>
+            <CardTitle className="text-lg font-medium">Your Coin Balance</CardTitle>
+            <CardDescription>Use coins to add playtime</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-3 mb-6">
+              <Coins className="w-8 h-8 text-secondary" />
+              <span className="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {coins}
+              </span>
+            </div>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>• Earn 5 coins every 30 minutes of playtime</p>
+              <p>• Get bonus coins with time pack purchases</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-accent/20 to-accent/10 border-accent/30">
+          <CardHeader>
+            <CardTitle className="text-lg font-medium">Convert Coins to Time</CardTitle>
+            <CardDescription>Exchange your earned coins for playtime</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Coins className="w-5 h-5 text-secondary" />
+                  <span className="text-xl font-bold">100 Coins</span>
+                </div>
+                <ArrowRightLeft className="w-5 h-5 text-muted-foreground" />
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-accent" />
+                  <span className="text-xl font-bold">30 Minutes</span>
+                </div>
+              </div>
+              
+              <Button 
+                className="w-full" 
+                size="lg"
+                onClick={onConvertCoins}
+                disabled={!canConvert}
+              >
+                <ArrowRightLeft className="w-4 h-4 mr-2" />
+                {canConvert ? "Convert 100 Coins" : `Need ${100 - coins} more coins`}
+              </Button>
+
+              {canConvert && (
+                <p className="text-sm text-muted-foreground text-center">
+                  You have enough coins to convert!
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-medium">How to Earn Coins</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-start gap-3">
+            <Clock className="w-5 h-5 text-accent mt-0.5" />
+            <div>
+              <p className="font-medium">Play Games</p>
+              <p className="text-sm text-muted-foreground">Earn 5 coins for every 30 minutes of active playtime</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Coins className="w-5 h-5 text-secondary mt-0.5" />
+            <div>
+              <p className="font-medium">Purchase Time Packs</p>
+              <p className="text-sm text-muted-foreground">Get bonus coins with every time pack purchase</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -67,16 +67,6 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
     }, 5000)
   }
 
-  const handleCoinPackPurchase = (pack: typeof coinPacks[0]) => {
-    setCoins(prev => prev + pack.amount)
-    setActiveOrders(prev => prev + 1)
-    toast.success(`Purchased ${pack.label}!`)
-    
-    setTimeout(() => {
-      setActiveOrders(prev => prev - 1)
-      toast.success("Order completed!")
-    }, 5000)
-  }
 
   const handleConvertCoins = () => {
     if (coins >= 100) {
@@ -138,7 +128,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
               <TimePacksTab onPurchase={handleTimePackPurchase} />
             )}
             {activeTab === "coins" && (
-              <CoinsTab coins={coins} onPurchase={handleCoinPackPurchase} />
+              <CoinsTab coins={coins} onConvertCoins={handleConvertCoins} />
             )}
             {activeTab === "arcade" && <ArcadeTab />}
             {activeTab === "apps" && <AppsTab />}
