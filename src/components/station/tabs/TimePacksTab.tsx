@@ -6,7 +6,7 @@ import { timePacks } from "../data"
 import { PaymentDialog } from "../PaymentDialog"
 
 interface TimePacksTabProps {
-  onPurchase: (pack: typeof timePacks[0]) => void
+  onPurchase: (pack: typeof timePacks[0], transactionId?: string) => void
 }
 
 export function TimePacksTab({ onPurchase }: TimePacksTabProps) {
@@ -18,9 +18,11 @@ export function TimePacksTab({ onPurchase }: TimePacksTabProps) {
     setPaymentOpen(true)
   }
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = (transactionId?: string) => {
     if (selectedPack) {
-      onPurchase(selectedPack)
+      onPurchase(selectedPack, transactionId)
+      setPaymentOpen(false)
+      setSelectedPack(null)
     }
   }
   return (

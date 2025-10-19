@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useAuth } from "@/contextProvider/AuthContext"
 import { toast } from "sonner"
 import { GamingSidebar } from "./GamingSidebar"
@@ -11,6 +11,7 @@ import { AppsTab } from "./tabs/AppsTab"
 import { FoodTab } from "./tabs/FoodTab"
 import { gameData, timePacks, coinPacks } from "./data"
 import { Platform, ActiveTab, User, Game } from "./types"
+import { StationWebSocket } from "@/services/StationWebSocket"
 
 export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => void }) {
   const { user: authUser } = useAuth()
@@ -22,6 +23,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeOrders, setActiveOrders] = useState(0)
   const [activeFoodOrders, setActiveFoodOrders] = useState(0)
+  const wsRef = useRef<StationWebSocket | null>(null)
   
   const user: User = {
     name: authUser?.username || authUser?.email?.split('@')[0] || "Gamer",
@@ -31,6 +33,45 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
     gamesPlayed: 12,
     achievements: 45,
   }
+
+  // Initialize WebSocket connection
+  useEffect(() => {
+    const ws = new StationWebSocket()
+    wsRef.current = ws
+    ws.connect()
+
+    // Handle admin commands
+    ws.on("TIME_APPROVED", (data: any) => {
+      setTimeLeft(prev => prev + data.minutes)
+      setCoins(prev => prev + (data.bonusCoins || 0))
+      setActiveOrders(prev => prev - 1)
+      toast.success(`Admin approved! +${data.minutes} minutes added`)
+    })
+
+    ws.on("ADD_TIME", (data: any) => {
+      setTimeLeft(prev => prev + data.minutes)
+      toast.success(`Admin added ${data.minutes} minutes to your session`)
+    })
+
+    ws.on("LOGOUT_USER", () => {
+      toast.error("Admin has logged you out")
+      setTimeout(() => handleLogout(), 2000)
+    })
+
+    ws.on("SHUTDOWN_STATION", () => {
+      toast.error("Admin is shutting down the station")
+      setTimeout(() => window.location.reload(), 3000)
+    })
+
+    ws.on("RESTART_STATION", () => {
+      toast.error("Admin is restarting the station")
+      setTimeout(() => window.location.reload(), 3000)
+    })
+
+    return () => {
+      ws.disconnect()
+    }
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,16 +96,18 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
     toast.success(`Launching ${game.title}...`)
   }
 
-  const handleTimePackPurchase = (pack: typeof timePacks[0]) => {
-    setTimeLeft(prev => prev + pack.duration)
-    setCoins(prev => prev + pack.bonusCoins)
+  const handleTimePackPurchase = (pack: typeof timePacks[0], transactionId?: string) => {
     setActiveOrders(prev => prev + 1)
-    toast.success(`Purchased ${pack.label}! +${pack.bonusCoins} bonus coins`)
+    toast.info(`Payment received. Waiting for admin approval...`)
     
-    setTimeout(() => {
-      setActiveOrders(prev => prev - 1)
-      toast.success("Time pack activated!")
-    }, 5000)
+    // Notify admin via WebSocket
+    if (wsRef.current && transactionId) {
+      wsRef.current.sendPaymentNotification(
+        transactionId,
+        typeof pack.price === 'string' ? parseFloat(pack.price.replace('$', '')) : pack.price,
+        pack.label
+      )
+    }
   }
 
 

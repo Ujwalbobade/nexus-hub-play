@@ -121,18 +121,46 @@ export class StationWebSocket {
     });
   }
 
+  // --- Admin commands ---
+  sendPaymentNotification(transactionId: string, amount: number, itemName: string) {
+    this.send({
+      action: "PAYMENT_NOTIFICATION",
+      stationId: this.stationId,
+      transactionId,
+      amount,
+      itemName,
+      timestamp: new Date().toISOString()
+    });
+  }
+
   // --- Message handling ---
   private handleMessage(data: any) {
-    const { command, type } = data;
+    const { command, type, action } = data;
+    
+    // Handle admin commands
+    if (action && this.messageHandlers.has(action)) {
+      this.messageHandlers.get(action)?.(data);
+      return;
+    }
+    
     if (command && this.messageHandlers.has(command)) {
       this.messageHandlers.get(command)?.(data);
       return;
     }
 
-    switch (type || command) {
+    switch (type || command || action) {
       case "COMMAND":
         console.log("Execute command:", data.command, data.data);
         this.messageHandlers.get(data.command)?.(data.data);
+        break;
+
+      case "ADD_TIME":
+      case "LOGOUT_USER":
+      case "SHUTDOWN_STATION":
+      case "RESTART_STATION":
+      case "TIME_APPROVED":
+        console.log("Admin command received:", action || type || command, data);
+        this.messageHandlers.get(action || type || command)?.(data);
         break;
 
       case "PING":
