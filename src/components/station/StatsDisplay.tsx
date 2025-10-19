@@ -14,13 +14,24 @@ interface StatsDisplayProps {
 }
 
 export function StatsDisplay({ timeLeft, coins, onConvertCoins }: StatsDisplayProps) {
+  const hours = Math.floor(timeLeft / 3600)
+  const minutes = Math.floor((timeLeft % 3600) / 60)
+  const seconds = timeLeft % 60
+  
+  // Determine color based on time left (in seconds)
+  const getTimeColor = () => {
+    if (timeLeft > 1800) return 'text-secondary' // > 30 minutes
+    if (timeLeft > 600) return 'text-accent' // > 10 minutes
+    return 'text-destructive' // <= 10 minutes
+  }
+  
   return (
     <div className="hidden md:flex items-center gap-3">
       <div className="flex items-center bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg px-4 py-2 border border-accent/30 shadow-card">
         <Clock className="w-4 h-4 text-accent mr-2" />
         <div className="text-center">
-          <div className={`text-lg font-bold ${timeLeft > 30 ? 'text-secondary' : timeLeft > 10 ? 'text-accent' : 'text-destructive'}`}>
-            {Math.floor(timeLeft / 60)}h {timeLeft % 60}m
+          <div className={`text-lg font-bold font-mono ${getTimeColor()}`}>
+            {hours > 0 && `${hours}:`}{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
           </div>
           <div className="text-xs text-muted-foreground">Time Left</div>
         </div>
