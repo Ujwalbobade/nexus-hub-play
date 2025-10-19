@@ -116,13 +116,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
 
 
   const handleConvertCoins = () => {
-    if (coins >= 100) {
-      setCoins(prev => prev - 100)
-      setTimeLeft(prev => prev + 1800) // 30 minutes = 1800 seconds
-      toast.success("Converted 100 coins to 30 minutes!")
-    } else {
-      toast.error("Not enough coins! Need 100 coins.")
-    }
+    toast.info("Coin conversion feature coming soon! Time can only be added by admin.")
   }
 
   const handleLogout = () => {
