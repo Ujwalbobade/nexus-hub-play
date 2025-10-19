@@ -60,7 +60,7 @@ export function TimePacksTab({ onPurchase }: TimePacksTabProps) {
         <PaymentDialog
           open={paymentOpen}
           onOpenChange={setPaymentOpen}
-          amount={selectedPack.price}
+          amount={selectedPack.priceValue}
           itemName={`${selectedPack.label} + ${selectedPack.bonusCoins} Bonus Coins`}
           onPaymentSuccess={handlePaymentSuccess}
         />

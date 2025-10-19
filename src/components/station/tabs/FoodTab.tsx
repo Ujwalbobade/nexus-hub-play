@@ -107,7 +107,7 @@ export function FoodTab({ user, onFoodOrderPlaced }: FoodTabProps) {
         <PaymentDialog
           open={paymentOpen}
           onOpenChange={setPaymentOpen}
-          amount={`₹${selectedItem.price}`}
+          amount={selectedItem.price}
           itemName={selectedItem.name}
           onPaymentSuccess={handlePaymentSuccess}
         />

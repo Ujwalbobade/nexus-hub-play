@@ -104,11 +104,11 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
     setActiveOrders(prev => prev + 1)
     toast.info(`Payment received. Waiting for admin approval...`)
     
-    // Notify admin via WebSocket (pack.minutes is in minutes, need to convert to seconds)
+    // Notify admin via WebSocket
     if (wsRef.current && transactionId) {
       wsRef.current.sendPaymentNotification(
         transactionId,
-        typeof pack.price === 'string' ? parseFloat(pack.price.replace('$', '')) : pack.price,
+        pack.priceValue,
         pack.label
       )
     }

@@ -16,7 +16,7 @@ import { toast } from "sonner"
 interface PaymentDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  amount: number | string
+  amount: number
   itemName: string
   customerName?: string
   customerPhone?: string
@@ -53,13 +53,11 @@ export function PaymentDialog({
 
   setIsProcessing(true)
   try {
-    const numericAmount = typeof amount === "string" ? Number(amount.replace("$", "")) : amount
-
     const response = await fetch("http://localhost:8088/api/payment/generate-qr", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        amount: numericAmount,
+        amount: amount,
         itemName,
         customerName,
         customerPhone,
