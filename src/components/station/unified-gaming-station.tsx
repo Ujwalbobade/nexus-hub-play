@@ -37,7 +37,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
 
   // Initialize WebSocket connection
   useEffect(() => {
-    const ws = new StationWebSocket()
+    const ws = new StationWebSocket("station-001", "NexusGamingStation")
     wsRef.current = ws
     ws.connect()
 
