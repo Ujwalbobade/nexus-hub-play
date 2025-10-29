@@ -1,78 +1,78 @@
-import os from "os";
+
+// Type for all station WebSocket messages
+export type StationMessage = {
+  action?: string;
+  minutes?: number;
+  bonusCoins?: number;
+  [key: string]: unknown;
+};
+
+import config from "../../public/stationconfig.json";
+import { getStationFromMac } from "./api";
 
 export class StationWebSocket {
+  public getStationId() {
+    return this.stationId;
+  }
   private ws: WebSocket | null = null;
   private readonly url: string;
   private reconnectInterval = 5000;
   private stationId: string;
   private stationName?: string;
-  private messageHandlers: Map<string, (data: any) => void> = new Map();
+  private messageHandlers: Map<string, (data: StationMessage) => void> = new Map();
   private isReconnecting = false;
 
-  constructor(stationId?: string, stationName?: string) {
-    this.stationId = stationId || this.getMacAddress(); // Fallback to system MAC
-    this.stationName = stationName || "UnknownStation";
-    this.url = `ws://localhost:8087/ws/station?stationId=${this.stationId}`;
-  }
 
-  private getMacAddress(): string {
+ async connect() {
+    if (this.isReconnecting) return;
+
     try {
-      const interfaces = os.networkInterfaces();
-      for (const name of Object.keys(interfaces)) {
-        for (const iface of interfaces[name]!) {
-          if (!iface.internal && iface.mac && iface.mac !== "00:00:00:00:00:00") {
-            console.log("Using MAC address as station ID:", iface.mac);
-            return iface.mac.toLowerCase();
-          }
+      // ✅ Fetch real station data first
+      const station = await getStationFromMac(config.macAddress);
+      this.stationId = station.id.toString();
+      this.stationName = station.name;
+
+      console.log(`✅ Station resolved via MAC: ${this.stationName} (ID: ${this.stationId})`);
+
+      // ✅ Create WebSocket only after we have real stationId
+      const wsUrl = `ws://localhost:8087/ws/station?stationId=${this.stationId}`;
+      this.ws = new WebSocket(wsUrl);
+
+      this.ws.onopen = () => {
+        console.log("✅ Station WebSocket connected:", this.stationId);
+        this.isReconnecting = false;
+        this.send({ action: "STATION_REGISTER", stationId: this.stationId });
+      };
+
+      this.ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log("📡 Received from server:", data);
+          this.handleMessage(data);
+        } catch (err) {
+          console.error("Invalid WebSocket message:", event.data, err);
         }
-      }
-    } catch {
-      console.warn("⚠️ Unable to fetch MAC address (browser environment)");
+      };
+
+      this.ws.onclose = (event) => {
+        console.warn("⚠️ Disconnected, will reconnect in 5s...", event.reason);
+        this.isReconnecting = true;
+        setTimeout(() => {
+          this.isReconnecting = false;
+          this.connect();
+        }, this.reconnectInterval);
+      };
+
+      this.ws.onerror = (err) => {
+        console.error("❌ WebSocket error:", err);
+        this.ws?.close();
+      };
+    } catch (error) {
+      console.error("❌ Failed to resolve station from MAC:", error);
     }
-    return "unknown-mac";
   }
 
-  connect() {
-  if (this.isReconnecting) return;
-
-  this.ws = new WebSocket(this.url);
-
-  this.ws.onopen = () => {
-    console.log("✅ Station WebSocket connected:", this.stationId);
-    this.isReconnecting = false;
-
-    // Send only MAC address to backend
-    this.send({
-      action: "STATION_REGISTER",
-      stationId: this.stationId, // only MAC
-    });
-  };
-
-  this.ws.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      console.log("📡 Received from server:", data);
-      this.handleMessage(data);
-    } catch (err) {
-      console.error("Invalid WebSocket message:", event.data, err);
-    }
-  };
-
-  this.ws.onclose = (event) => {
-    console.warn("⚠️ Disconnected, will reconnect in 5s...", event.reason);
-    this.isReconnecting = true;
-    setTimeout(() => {
-      this.isReconnecting = false;
-      this.connect();
-    }, this.reconnectInterval);
-  };
-
-  this.ws.onerror = (err) => {
-    console.error("❌ WebSocket error:", err);
-    this.ws?.close();
-  };
-}
-  send(payload: any) {
+  send(payload: StationMessage) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(payload));
       console.log("📤 Sent:", payload);
@@ -134,34 +134,41 @@ export class StationWebSocket {
   }
 
   // --- Message handling ---
-  private handleMessage(data: any) {
+  private handleMessage(data: StationMessage) {
     const { command, type, action } = data;
-    
+
     // Handle admin commands
-    if (action && this.messageHandlers.has(action)) {
+    if (typeof action === "string" && this.messageHandlers.has(action)) {
       this.messageHandlers.get(action)?.(data);
       return;
     }
-    
-    if (command && this.messageHandlers.has(command)) {
+
+    if (typeof command === "string" && this.messageHandlers.has(command)) {
       this.messageHandlers.get(command)?.(data);
       return;
     }
 
     switch (type || command || action) {
       case "COMMAND":
-        console.log("Execute command:", data.command, data.data);
-        this.messageHandlers.get(data.command)?.(data.data);
+        if (typeof data.command === "string") {
+          console.log("Execute command:", data.command, data.data);
+          // If data.data is not a StationMessage, pass an empty object
+          this.messageHandlers.get(data.command)?.(typeof data.data === "object" && data.data !== null ? data.data as StationMessage : {});
+        }
         break;
 
       case "ADD_TIME":
       case "LOGOUT_USER":
       case "SHUTDOWN_STATION":
       case "RESTART_STATION":
-      case "TIME_APPROVED":
-        console.log("Admin command received:", action || type || command, data);
-        this.messageHandlers.get(action || type || command)?.(data);
+      case "TIME_APPROVED": {
+        const key = typeof action === "string" ? action : typeof type === "string" ? type : typeof command === "string" ? command : undefined;
+        if (key && this.messageHandlers.has(key)) {
+          console.log("Admin command received:", key, data);
+          this.messageHandlers.get(key)?.(data);
+        }
         break;
+      }
 
       case "PING":
         this.send({ action: "PONG" });
@@ -180,7 +187,9 @@ export class StationWebSocket {
     }
   }
 
-  on(messageType: string, handler: (data: any) => void) {
+  on(messageType: string, handler: (data: StationMessage) => void) {
     this.messageHandlers.set(messageType, handler);
   }
+
+
 }

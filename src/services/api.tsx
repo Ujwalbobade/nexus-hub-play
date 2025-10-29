@@ -51,7 +51,7 @@ const getAuthHeaders = async () => {
 
 // ----------------- TOKEN HANDLING -----------------
 const getToken = async (): Promise<string | null> => {
-  let token = localStorage.getItem("token") || localStorage.getItem("token-dummy");
+  const token = localStorage.getItem("token") || localStorage.getItem("token-dummy");
   console.log("Existing token:", token);
   const isValid = (t: string) => {
     try {
@@ -119,3 +119,44 @@ export const forgotPassword = async (email: string) => {
   if (!res.ok) throw new Error("Request failed");
   return res.json();
 };
+
+//----------------- TIME REQUESTS API -----------------
+// Create a time request using generic apiFetch for authentication and error handling
+export async function createTimeRequest(
+  userId: number,
+  sessionId: number | undefined,
+  additionalMinutes: number,
+  amount: number,
+  stationId?: number | string
+) {
+  return await apiFetch("/auth/client/AddTimeRequest", {
+    method: "POST",
+    body: JSON.stringify({ userId, sessionId, additionalMinutes, amount, stationId }),
+  });
+}
+
+export async function fetchTimeRequests(sessionId: number) {
+  const res = await fetch(`${API_BASE}/Session/TimeRequests/${sessionId}`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch time requests");
+  }
+  return await res.json();
+}
+export async function getStationFromMac(mac: string) {
+  console.log("Fetching station for MAC:", mac);
+
+  try {
+    // Use generic apiFetch so auth headers are automatically added
+    const data = await apiFetch(`/auth/client/Station/${encodeURIComponent(mac)}`);
+
+    if (!data || !data.id) {
+      throw new Error("Invalid response: station not found");
+    }
+
+    return data; // API already returns the station object
+
+  } catch (err) {
+    console.error("Error fetching station by MAC:", err);
+    throw err;
+  }
+}

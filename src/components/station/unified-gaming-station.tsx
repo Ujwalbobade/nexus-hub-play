@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react"
 import { useAuth } from "@/contextProvider/AuthContext"
 import { toast } from "sonner"
@@ -12,9 +13,36 @@ import { AppsTab } from "./tabs/AppsTab"
 import { FoodTab } from "./tabs/FoodTab"
 import { gameData, timePacks, coinPacks } from "./data"
 import { Platform, ActiveTab, User, Game } from "./types"
-import { StationWebSocket } from "@/services/StationWebSocket"
+import { StationWebSocket, StationMessage } from "@/services/StationWebSocket"
+import { createTimeRequest, fetchTimeRequests } from "@/services/api"
 
 export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => void }) {
+  // Poll for approved time requests and add time if approved
+  useEffect(() => {
+    const sessionIdRaw = localStorage.getItem("currentSessionId");
+    const currentSessionId = sessionIdRaw ? Number(sessionIdRaw) : undefined;
+    if (!currentSessionId) return;
+    // Track applied requests in a ref so state doesn't reset on rerender
+    const appliedRef = window["appliedTimeRequestIds"] || [];
+    const pollInterval = setInterval(async () => {
+      try {
+        const requests = await fetchTimeRequests(currentSessionId);
+        if (Array.isArray(requests)) {
+          requests.forEach((req: { status: string; additionalMinutes: number; id: number }) => {
+            if (req.status === "APPROVED" && !appliedRef.includes(req.id)) {
+              setTimeLeft(prev => prev + (req.additionalMinutes * 60));
+              appliedRef.push(req.id);
+              window["appliedTimeRequestIds"] = appliedRef;
+              toast.success(`Time request approved! +${req.additionalMinutes} minutes added.`);
+            }
+          });
+        }
+      } catch (err) {
+        // Ignore errors for polling
+      }
+    }, 5000);
+    return () => clearInterval(pollInterval);
+  }, []);
   const { user: authUser } = useAuth()
   const [platform, setPlatform] = useState<Platform>("pc")
   const [searchQuery, setSearchQuery] = useState("")
@@ -36,45 +64,48 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
   }
 
   // Initialize WebSocket connection
-  useEffect(() => {
-    const ws = new StationWebSocket("station-001", "NexusGamingStation")
-    wsRef.current = ws
-    ws.connect()
+useEffect(() => {
+  // ✅ Create instance without hardcoded ID/name
+  const ws = new StationWebSocket();
+  wsRef.current = ws;
 
-    // Handle admin commands
-    ws.on("TIME_APPROVED", (data: any) => {
-      const secondsToAdd = data.minutes * 60 // Convert minutes to seconds
-      setTimeLeft(prev => prev + secondsToAdd)
-      setCoins(prev => prev + (data.bonusCoins || 0))
-      setActiveOrders(prev => prev - 1)
-      toast.success(`Admin approved! +${data.minutes} minutes added`)
-    })
+  // ✅ Connect (will auto-fetch correct station info from MAC via API)
+  ws.connect();
 
-    ws.on("ADD_TIME", (data: any) => {
-      const secondsToAdd = data.minutes * 60 // Convert minutes to seconds
-      setTimeLeft(prev => prev + secondsToAdd)
-      toast.success(`Admin added ${data.minutes} minutes to your session`)
-    })
+  // --- Admin command handlers ---
+  ws.on("TIME_APPROVED", (data: StationMessage) => {
+    const secondsToAdd = (data.minutes ?? 0) * 60; // Convert minutes to seconds
+    setTimeLeft(prev => prev + secondsToAdd);
+    setCoins(prev => prev + (data.bonusCoins || 0));
+    setActiveOrders(prev => prev - 1);
+    toast.success(`Admin approved! +${data.minutes} minutes added`);
+  });
 
-    ws.on("LOGOUT_USER", () => {
-      toast.error("Admin has logged you out")
-      setTimeout(() => handleLogout(), 2000)
-    })
+  ws.on("ADD_TIME", (data: StationMessage) => {
+    const secondsToAdd = (data.minutes ?? 0) * 60;
+    setTimeLeft(prev => prev + secondsToAdd);
+    toast.success(`Admin added ${data.minutes} minutes to your session`);
+  });
 
-    ws.on("SHUTDOWN_STATION", () => {
-      toast.error("Admin is shutting down the station")
-      setTimeout(() => window.location.reload(), 3000)
-    })
+  ws.on("LOGOUT_USER", () => {
+    toast.error("Admin has logged you out");
+    setTimeout(() => handleLogout(), 2000);
+  });
 
-    ws.on("RESTART_STATION", () => {
-      toast.error("Admin is restarting the station")
-      setTimeout(() => window.location.reload(), 3000)
-    })
+  ws.on("SHUTDOWN_STATION", () => {
+    toast.error("Admin is shutting down the station");
+    setTimeout(() => window.location.reload(), 3000);
+  });
 
-    return () => {
-      ws.disconnect()
-    }
-  }, [])
+  ws.on("RESTART_STATION", () => {
+    toast.error("Admin is restarting the station");
+    setTimeout(() => window.location.reload(), 3000);
+  });
+
+  return () => {
+    ws.disconnect();
+  };
+}, []);
 
   // Real-time timer that counts down every second
   useEffect(() => {
@@ -100,17 +131,38 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
     toast.success(`Launching ${game.title}...`)
   }
 
-  const handleTimePackPurchase = (pack: typeof timePacks[0], transactionId?: string) => {
+  // Send time request using API
+  const handleTimePackPurchase = async (pack: typeof timePacks[0], transactionId?: string) => {
     setActiveOrders(prev => prev + 1)
     toast.info(`Payment received. Waiting for admin approval...`)
-    
-    // Notify admin via WebSocket
-    if (wsRef.current && transactionId) {
-      wsRef.current.sendPaymentNotification(
-        transactionId,
-        pack.priceValue,
-        pack.label
-      )
+
+    try {
+      // Get current sessionId from localStorage
+      const sessionIdRaw = localStorage.getItem("currentSessionId");
+      const currentSessionId = sessionIdRaw ? Number(sessionIdRaw) : undefined;
+      const stationId = wsRef.current?.getStationId?.() || undefined;
+      let result;
+      if (typeof currentSessionId === "number" && currentSessionId > 0) {
+        result = await createTimeRequest(
+          authUser.id,
+          currentSessionId,
+          pack.duration,
+          pack.priceValue,
+          stationId
+        );
+      } else {
+        // If no session, omit sessionId (API should handle missing sessionId)
+        result = await createTimeRequest(
+          authUser.id,
+          undefined,
+          pack.duration,
+          pack.priceValue,
+          stationId
+        );
+      }
+      toast.success(result.message || "Time request sent!");
+    } catch (err) {
+      toast.error("Failed to request more time.");
     }
   }
 
@@ -166,7 +218,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
                     Your gaming session has expired. Purchase a time pack to continue playing.
                   </p>
                 </div>
-                <TimePacksTab onPurchase={handleTimePackPurchase} />
+                <TimePacksTab onPurchase={handleTimePackPurchase} userId={authUser.id} sessionId={1}/>
               </div>
             ) : (
               <>
@@ -179,7 +231,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
                   />
                 )}
                 {activeTab === "timepacks" && (
-                  <TimePacksTab onPurchase={handleTimePackPurchase} />
+                  <TimePacksTab onPurchase={handleTimePackPurchase} userId={authUser.id} sessionId={1}/>
                 )}
                 {activeTab === "coins" && (
                   <CoinsTab coins={coins} onConvertCoins={handleConvertCoins} />
