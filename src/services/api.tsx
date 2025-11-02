@@ -142,6 +142,10 @@ export async function fetchTimeRequests(sessionId: number) {
   }
   return await res.json();
 }
+
+export async function fetchSession(sessionId: number) {
+  return await apiFetch(`/auth/client/Session/${sessionId}`);
+}
 export async function getStationFromMac(mac: string) {
   console.log("Fetching station for MAC:", mac);
 

@@ -14,11 +14,30 @@ import { FoodTab } from "./tabs/FoodTab"
 import { gameData, timePacks, coinPacks } from "./data"
 import { Platform, ActiveTab, User, Game } from "./types"
 import { StationWebSocket, StationMessage } from "@/services/StationWebSocket"
-import { createTimeRequest, fetchTimeRequests } from "@/services/api"
+import { createTimeRequest, fetchTimeRequests, fetchSession } from "@/services/api"
 
 export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => void }) {
   const sessionIdRaw = localStorage.getItem("currentSessionId");
-  // Poll for approved time requests and add time if approved
+  
+  // Fetch initial session time on mount
+  useEffect(() => {
+    const sessionIdRaw = localStorage.getItem("currentSessionId");
+    const currentSessionId = sessionIdRaw ? Number(sessionIdRaw) : undefined;
+    if (!currentSessionId) return;
+    
+    (async () => {
+      try {
+        const session = await fetchSession(currentSessionId);
+        if (session && session.remainingMinutes !== undefined) {
+          setTimeLeft(session.remainingMinutes * 60); // Convert minutes to seconds
+        }
+      } catch (err) {
+        console.error("Failed to fetch session:", err);
+      }
+    })();
+  }, []);
+  
+  // Poll for approved time requests and sync time with backend
   useEffect(() => {
     const sessionIdRaw = localStorage.getItem("currentSessionId");
     const currentSessionId = sessionIdRaw ? Number(sessionIdRaw) : undefined;
@@ -27,11 +46,19 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
     const appliedRef = window["appliedTimeRequestIds"] || [];
     const pollInterval = setInterval(async () => {
       try {
-        const requests = await fetchTimeRequests(currentSessionId);
+        const [requests, session] = await Promise.all([
+          fetchTimeRequests(currentSessionId),
+          fetchSession(currentSessionId)
+        ]);
+        
+        // Update time from backend session
+        if (session && session.remainingMinutes !== undefined) {
+          setTimeLeft(session.remainingMinutes * 60);
+        }
+        
         if (Array.isArray(requests)) {
           requests.forEach((req: { status: string; additionalMinutes: number; id: number }) => {
             if (req.status === "APPROVED" && !appliedRef.includes(req.id)) {
-              setTimeLeft(prev => prev + (req.additionalMinutes * 60));
               setRecentlyAddedTime(req.additionalMinutes);
               setTimeout(() => setRecentlyAddedTime(null), 5000);
               appliedRef.push(req.id);
