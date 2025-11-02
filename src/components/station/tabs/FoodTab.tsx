@@ -10,6 +10,8 @@ import { toast } from "sonner"
 interface FoodTabProps {
   user: User
   onFoodOrderPlaced?: () => void
+  userId: number
+  sessionId: number
 }
 
 type MenuItem = {
@@ -21,7 +23,7 @@ type MenuItem = {
   description: string
 }
 
-export function FoodTab({ user, onFoodOrderPlaced }: FoodTabProps) {
+export function FoodTab({ user, onFoodOrderPlaced, userId, sessionId }: FoodTabProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
@@ -110,6 +112,8 @@ export function FoodTab({ user, onFoodOrderPlaced }: FoodTabProps) {
           amount={selectedItem.price}
           itemName={selectedItem.name}
           onPaymentSuccess={handlePaymentSuccess}
+          userId={userId}
+          sessionId={sessionId}
         />
       )}
     </div>

@@ -20,6 +20,7 @@ interface HeaderProps {
   activeOrders?: number
   activeFoodOrders?: number
   onConvertCoins?: () => void
+  recentlyAddedTime?: number | null
 }
 
 export function Header({ 
@@ -35,7 +36,8 @@ export function Header({
   onLogout,
   activeOrders = 0,
   activeFoodOrders = 0,
-  onConvertCoins
+  onConvertCoins,
+  recentlyAddedTime
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-card/95 via-primary/5 to-secondary/5 backdrop-blur-md border-b border-border shadow-lg">
@@ -87,7 +89,7 @@ export function Header({
                 </div>
               </div>
             )}
-            <StatsDisplay timeLeft={timeLeft} coins={coins} onConvertCoins={onConvertCoins} />
+            <StatsDisplay timeLeft={timeLeft} coins={coins} onConvertCoins={onConvertCoins} recentlyAddedTime={recentlyAddedTime} />
             <ProfileDropdown user={user} onLogout={onLogout} />
           </div>
         </div>

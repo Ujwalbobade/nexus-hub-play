@@ -11,9 +11,10 @@ interface StatsDisplayProps {
   timeLeft: number
   coins: number
   onConvertCoins?: () => void
+  recentlyAddedTime?: number | null
 }
 
-export function StatsDisplay({ timeLeft, coins, onConvertCoins }: StatsDisplayProps) {
+export function StatsDisplay({ timeLeft, coins, onConvertCoins, recentlyAddedTime }: StatsDisplayProps) {
   const hours = Math.floor(timeLeft / 3600)
   const minutes = Math.floor((timeLeft % 3600) / 60)
   const seconds = timeLeft % 60
@@ -27,14 +28,19 @@ export function StatsDisplay({ timeLeft, coins, onConvertCoins }: StatsDisplayPr
   
   return (
     <div className="hidden md:flex items-center gap-3">
-      <div className="flex items-center bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg px-4 py-2 border border-accent/30 shadow-card">
+      <div className="relative flex items-center bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg px-4 py-2 border border-accent/30 shadow-card">
         <Clock className="w-4 h-4 text-accent mr-2" />
         <div className="text-center">
-          <div className={`text-lg font-bold font-mono ${getTimeColor()}`}>
+          <div className={`text-lg font-bold font-mono ${getTimeColor()} ${recentlyAddedTime ? 'animate-pulse' : ''}`}>
             {hours > 0 && `${hours}:`}{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
           </div>
           <div className="text-xs text-muted-foreground">Time Left</div>
         </div>
+        {recentlyAddedTime && (
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-secondary text-secondary-foreground px-3 py-1 rounded-md text-sm font-bold shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-500">
+            +{recentlyAddedTime} min
+          </div>
+        )}
       </div>
       <div className="flex items-center bg-gradient-to-br from-primary/20 to-secondary/10 rounded-lg px-4 py-2 border border-primary/30 shadow-card">
         <Coins className="w-4 h-4 text-secondary mr-2" />

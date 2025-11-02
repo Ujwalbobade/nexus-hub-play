@@ -32,6 +32,8 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
           requests.forEach((req: { status: string; additionalMinutes: number; id: number }) => {
             if (req.status === "APPROVED" && !appliedRef.includes(req.id)) {
               setTimeLeft(prev => prev + (req.additionalMinutes * 60));
+              setRecentlyAddedTime(req.additionalMinutes);
+              setTimeout(() => setRecentlyAddedTime(null), 5000);
               appliedRef.push(req.id);
               window["appliedTimeRequestIds"] = appliedRef;
               toast.success(`Time request approved! +${req.additionalMinutes} minutes added.`);
@@ -53,6 +55,7 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeOrders, setActiveOrders] = useState(0)
   const [activeFoodOrders, setActiveFoodOrders] = useState(0)
+  const [recentlyAddedTime, setRecentlyAddedTime] = useState<number | null>(null)
   const wsRef = useRef<StationWebSocket | null>(null)
   
   const user: User = {
@@ -79,12 +82,16 @@ useEffect(() => {
     setTimeLeft(prev => prev + secondsToAdd);
     setCoins(prev => prev + (data.bonusCoins || 0));
     setActiveOrders(prev => prev - 1);
+    setRecentlyAddedTime(data.minutes ?? 0);
+    setTimeout(() => setRecentlyAddedTime(null), 5000);
     toast.success(`Admin approved! +${data.minutes} minutes added`);
   });
 
   ws.on("ADD_TIME", (data: StationMessage) => {
     const secondsToAdd = (data.minutes ?? 0) * 60;
     setTimeLeft(prev => prev + secondsToAdd);
+    setRecentlyAddedTime(data.minutes ?? 0);
+    setTimeout(() => setRecentlyAddedTime(null), 5000);
     toast.success(`Admin added ${data.minutes} minutes to your session`);
   });
 
@@ -206,6 +213,7 @@ useEffect(() => {
           activeOrders={activeOrders}
           activeFoodOrders={activeFoodOrders}
           onConvertCoins={handleConvertCoins}
+          recentlyAddedTime={recentlyAddedTime}
         />
         
         <main className="flex-1 overflow-y-auto">
@@ -242,6 +250,8 @@ useEffect(() => {
                 {activeTab === "food" && (
                   <FoodTab 
                     user={user} 
+                    userId={authUser.id}
+                    sessionId={Number(sessionIdRaw)}
                     onFoodOrderPlaced={() => {
                       setActiveFoodOrders(prev => prev + 1)
                       setTimeout(() => {
