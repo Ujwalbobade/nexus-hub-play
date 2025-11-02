@@ -161,7 +161,8 @@ export class StationWebSocket {
       case "LOGOUT_USER":
       case "SHUTDOWN_STATION":
       case "RESTART_STATION":
-      case "TIME_APPROVED": {
+      case "TIME_APPROVED":
+      case "TIME_AUTO_APPROVED": {
         const key = typeof action === "string" ? action : typeof type === "string" ? type : typeof command === "string" ? command : undefined;
         if (key && this.messageHandlers.has(key)) {
           console.log("Admin command received:", key, data);

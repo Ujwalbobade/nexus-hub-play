@@ -114,6 +114,17 @@ useEffect(() => {
     toast.success(`Admin approved! +${data.minutes} minutes added`);
   });
 
+  ws.on("TIME_AUTO_APPROVED", (data: StationMessage) => {
+    // Handle nested structure: data.data.sessionId.minutes
+    const dataObj = data.data as any;
+    const minutes = dataObj?.sessionId?.minutes ?? 0;
+    const secondsToAdd = minutes * 60;
+    setTimeLeft(prev => prev + secondsToAdd);
+    setRecentlyAddedTime(minutes);
+    setTimeout(() => setRecentlyAddedTime(null), 5000);
+    toast.success(`Time auto-approved! +${minutes} minutes added`);
+  });
+
   ws.on("ADD_TIME", (data: StationMessage) => {
     const secondsToAdd = (data.minutes ?? 0) * 60;
     setTimeLeft(prev => prev + secondsToAdd);
