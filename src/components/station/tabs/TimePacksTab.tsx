@@ -82,8 +82,6 @@ export function TimePacksTab({ onPurchase, userId, sessionId }: TimePacksTabProp
           amount={selectedPack.priceValue}
           itemName={`${selectedPack.label} + ${selectedPack.bonusCoins} Bonus Coins`}
           onPaymentSuccess={handlePaymentSuccess}
-          userId={userId}
-          sessionId={sessionId}
         />
       )}
 
