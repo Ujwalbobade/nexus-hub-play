@@ -21,6 +21,8 @@ interface PaymentDialogProps {
   customerName?: string
   customerPhone?: string
   onPaymentSuccess: (transactionId?: string) => void
+  userId: number
+  sessionId: number
 }
 
 export function PaymentDialog({
@@ -31,6 +33,8 @@ export function PaymentDialog({
   customerName,
   customerPhone,
   onPaymentSuccess,
+  userId,
+  sessionId,
 }: PaymentDialogProps) {
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "cash">("upi")
   const [isProcessing, setIsProcessing] = useState(false)

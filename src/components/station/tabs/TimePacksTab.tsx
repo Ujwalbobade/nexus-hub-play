@@ -18,6 +18,7 @@ export function TimePacksTab({ onPurchase, userId, sessionId }: TimePacksTabProp
   const [requests, setRequests] = useState<any[]>([])
 
   // Fetch all time requests
+
   useEffect(() => {
     if (!sessionId) return
     ;(async () => {
@@ -29,6 +30,8 @@ export function TimePacksTab({ onPurchase, userId, sessionId }: TimePacksTabProp
       }
     })()
   }, [sessionId])
+
+  
 
   const handlePurchaseClick = (pack: typeof timePacks[0]) => {
     setSelectedPack(pack)

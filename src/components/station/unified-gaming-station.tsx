@@ -17,6 +17,7 @@ import { StationWebSocket, StationMessage } from "@/services/StationWebSocket"
 import { createTimeRequest, fetchTimeRequests } from "@/services/api"
 
 export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => void }) {
+  const sessionIdRaw = localStorage.getItem("currentSessionId");
   // Poll for approved time requests and add time if approved
   useEffect(() => {
     const sessionIdRaw = localStorage.getItem("currentSessionId");
@@ -231,7 +232,7 @@ useEffect(() => {
                   />
                 )}
                 {activeTab === "timepacks" && (
-                  <TimePacksTab onPurchase={handleTimePackPurchase} userId={authUser.id} sessionId={1}/>
+                  <TimePacksTab onPurchase={handleTimePackPurchase} userId={authUser.id} sessionId={Number(sessionIdRaw)}/>
                 )}
                 {activeTab === "coins" && (
                   <CoinsTab coins={coins} onConvertCoins={handleConvertCoins} />
