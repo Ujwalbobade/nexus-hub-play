@@ -14,7 +14,7 @@ import { FoodTab } from "./tabs/FoodTab"
 import { gameData, timePacks, coinPacks } from "./data"
 import { Platform, ActiveTab, User, Game } from "./types"
 import { StationWebSocket, StationMessage } from "@/services/StationWebSocket"
-import { createTimeRequest, fetchTimeRequests, fetchSession } from "@/services/api"
+import { createTimeRequest, fetchTimeRequests, fetchSession, logoutUser } from "@/services/api"
 import { Session } from "inspector/promises"
 
 export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => void }) {
@@ -262,7 +262,18 @@ useEffect(() => {
     toast.info("Coin conversion feature coming soon! Time can only be added by admin.")
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      const stationId = wsRef.current?.getStationId?.();
+      if (authUser?.id && stationId) {
+        // Notify backend
+        await logoutUser(authUser.id, Number(stationId));
+        // Send WebSocket logout
+        wsRef.current?.sendUserLogout(authUser.id.toString());
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
     if (onLogout) {
       onLogout()
     }

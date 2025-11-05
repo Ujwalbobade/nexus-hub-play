@@ -164,3 +164,11 @@ export async function getStationFromMac(mac: string) {
     throw err;
   }
 }
+
+// ----------------- LOGOUT API -----------------
+export async function logoutUser(userId: number, stationId: number) {
+  return await apiFetch("/auth/client/logout", {
+    method: "POST",
+    body: JSON.stringify({ userId, stationId }),
+  });
+}
