@@ -15,6 +15,7 @@ import { gameData, timePacks, coinPacks } from "./data"
 import { Platform, ActiveTab, User, Game } from "./types"
 import { StationWebSocket, StationMessage } from "@/services/StationWebSocket"
 import { createTimeRequest, fetchTimeRequests, fetchSession } from "@/services/api"
+import { Session } from "inspector/promises"
 
 export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => void }) {
   const sessionIdRaw = localStorage.getItem("currentSessionId");
@@ -133,6 +134,16 @@ useEffect(() => {
     toast.success(`Admin added ${data.minutes} minutes to your session`);
   });
 
+  ws.on("TIME_ADDED", (data: StationMessage) => {
+    const payload = (data.data as StationMessage) || data;
+    const addedMinutes = payload.addedMinutes ?? payload.minutes ?? 0;
+    const secondsToAdd = addedMinutes * 60;
+    setTimeLeft(prev => prev + secondsToAdd);
+    setRecentlyAddedTime(addedMinutes);
+    setTimeout(() => setRecentlyAddedTime(null), 5000);
+    toast.success(`⏱️ +${addedMinutes} minutes added to your session!`);
+  });
+
   ws.on("LOGOUT_USER", () => {
     toast.error("Admin has logged you out");
     setTimeout(() => handleLogout(), 2000);
@@ -146,6 +157,40 @@ useEffect(() => {
   ws.on("RESTART_STATION", () => {
     toast.error("Admin is restarting the station");
     setTimeout(() => window.location.reload(), 3000);
+  });
+
+  ws.on("STATION_REGISTERED", (data: StationMessage) => {
+    const sessionId = data.sessionId;
+    // Fetch session to get initial time
+    (async () => {
+      try {
+        const session = await fetchSession(Number(sessionId));
+        console.log("Fetched session on register:", session);
+        if (session && session.timeRemaining !== undefined) {
+          setTimeLeft(session.timeRemaining * 60); // Convert minutes to seconds
+        }
+      } catch (err) {
+        console.error("Failed to fetch session:", err);
+      }
+    })();
+    console.log(`✅ Station ${data.stationId} registered successfully with session ${data.sessionId}`);
+  });
+
+  ws.on("STATION_REGISTER", (data: StationMessage) => {
+   const sessionId = data.sessionId;
+    // Fetch session to get initial time
+    (async () => {
+      try {
+        const session = await fetchSession(Number(sessionId));
+        console.log("Fetched session on register:", session);
+        if (session && session.timeRemaining !== undefined) {
+          setTimeLeft(session.timeRemaining); // Convert minutes to seconds
+        }
+      } catch (err) {
+        console.error("Failed to fetch session:", err);
+      }
+    })();
+    console.log(`✅ Station ${data.stationId} registered successfully with session ${data.sessionId}`);
   });
 
   return () => {

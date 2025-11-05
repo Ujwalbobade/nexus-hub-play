@@ -1,14 +1,37 @@
-
 // Type for all station WebSocket messages
 export type StationMessage = {
   action?: string;
   minutes?: number;
   bonusCoins?: number;
   [key: string]: unknown;
+  addedMinutes?: number;
+  data?: StationMessage | null;
+  command?: string;
+  type?: string;
+  stationId?: string;
+  sessionId?: string;
+  userId?: string;
+  username?: string;
+  gameId?: string;
+  gameTitle?: string;
+  endTime?: string;
+  status?: {
+    timeLeft: number;
+    coins: number;
+    activeGame?: string;
+  };
+  transactionId?: string;
+  amount?: number;
+  itemName?: string;
+  timestamp?: string;
+  message?: string;
+timeRemaining?: number;
 };
 
+import { timePacks } from "@/components/station/data";
 import config from "../../public/stationconfig.json";
 import { getStationFromMac } from "./api";
+import { TimePacksTab } from "@/components/station/tabs/TimePacksTab";
 
 export class StationWebSocket {
   public getStationId() {
@@ -23,7 +46,7 @@ export class StationWebSocket {
   private isReconnecting = false;
 
 
- async connect() {
+  async connect() {
     if (this.isReconnecting) return;
 
     try {
@@ -149,6 +172,12 @@ export class StationWebSocket {
     }
 
     switch (type || command || action) {
+      case "STATION_REGISTER":
+      case "STATION_REGISTERED":
+        console.log(`✅ Station ${data.stationId} registered successfully with session ${data.sessionId}`);
+        this.messageHandlers.get("STATION_REGISTERED")?.(data);
+        return;
+
       case "COMMAND":
         if (typeof data.command === "string") {
           console.log("Execute command:", data.command, data.data);
@@ -161,8 +190,7 @@ export class StationWebSocket {
       case "LOGOUT_USER":
       case "SHUTDOWN_STATION":
       case "RESTART_STATION":
-      case "TIME_APPROVED":
-      case "TIME_AUTO_APPROVED": {
+      case "TIME_APPROVED": {
         const key = typeof action === "string" ? action : typeof type === "string" ? type : typeof command === "string" ? command : undefined;
         if (key && this.messageHandlers.has(key)) {
           console.log("Admin command received:", key, data);
@@ -171,13 +199,27 @@ export class StationWebSocket {
         break;
       }
 
+      case "TIME_ADDED": {
+        const payload = (data.data as StationMessage) || data;
+        const addedMinutes = payload.addedMinutes ?? payload.minutes;
+
+        console.log(`⏱️ Additional time added: +${addedMinutes} minutes`);
+        this.messageHandlers.get("TIME_ADDED")?.(payload);
+        ;
+        return;
+      }
+
       case "PING":
         this.send({ action: "PONG" });
         break;
 
-      default:
-        console.log("Unhandled WebSocket message:", data);
     }
+    if (data.message === "Station registered successfully") {
+      console.log(`✅ Station ${data.stationId} registered successfully with session ${data.sessionId}`);
+      this.messageHandlers.get("STATION_REGISTERED")?.(data);
+      return;
+    }
+    console.log("Unhandled WebSocket message:", data);
   }
 
   disconnect() {
