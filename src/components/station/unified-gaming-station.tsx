@@ -194,14 +194,18 @@ useEffect(() => {
   });
 
   ws.on("SESSION_DETAILS", (data: StationMessage) => {
-    const timeRemaining = data.timeRemaining ?? 0;
+    const remainingTime = (data as any).remainingTime ?? 0;
     const sessionId = data.sessionId;
-    console.log(`📋 Session details received | Session: ${sessionId} | Time: ${timeRemaining} min`);
+    const status = (data as any).status;
+    
+    console.log(`📋 Session details received | Session: ${sessionId} | Time: ${remainingTime} min | Status: ${status}`);
     
     // Convert minutes to seconds and set time
-    setTimeLeft(timeRemaining * 60);
+    setTimeLeft(remainingTime * 60);
     
-    toast.success(`Session ${data.message || 'loaded'} - ${timeRemaining} minutes available`);
+    if (status === "ACTIVE") {
+      toast.success(`Session resumed - ${remainingTime} minutes available`);
+    }
   });
 
   return () => {
