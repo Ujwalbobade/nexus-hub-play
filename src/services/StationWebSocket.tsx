@@ -216,12 +216,19 @@ export class StationWebSocket {
         break;
 
     }
-    // Handle station registration with session details
-    if (data.message && typeof data.message === "string" && data.message.includes("Station registered successfully")) {
+    // Handle station IDLE state (station online, waiting for user)
+    if (data.message && typeof data.message === "string" && data.message.includes("Station connected - waiting for user login")) {
+      console.log(`🟡 Station ${data.stationId} is IDLE - waiting for user login`);
+      this.messageHandlers.get("STATION_REGISTERED")?.(data);
+      return;
+    }
+
+    // Handle station registration with active session
+    if (data.message && typeof data.message === "string" && data.message.includes("Station registered successfully with active session")) {
       console.log(`✅ Station ${data.stationId} registered successfully with session ${data.sessionId}`);
       this.messageHandlers.get("STATION_REGISTERED")?.(data);
       
-      // If it includes session details (remainingTime, status), also trigger SESSION_DETAILS
+      // Trigger SESSION_DETAILS with remainingTime
       if ((data as any).remainingTime !== undefined && (data as any).status) {
         console.log(`📋 Triggering SESSION_DETAILS handler with ${(data as any).remainingTime} min remaining`);
         this.messageHandlers.get("SESSION_DETAILS")?.(data);
