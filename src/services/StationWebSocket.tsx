@@ -216,9 +216,16 @@ export class StationWebSocket {
         break;
 
     }
-    if (data.message === "Station registered successfully") {
+    // Handle station registration with session details
+    if (data.message && typeof data.message === "string" && data.message.includes("Station registered successfully")) {
       console.log(`✅ Station ${data.stationId} registered successfully with session ${data.sessionId}`);
       this.messageHandlers.get("STATION_REGISTERED")?.(data);
+      
+      // If it includes session details (remainingTime, status), also trigger SESSION_DETAILS
+      if ((data as any).remainingTime !== undefined && (data as any).status) {
+        console.log(`📋 Triggering SESSION_DETAILS handler with ${(data as any).remainingTime} min remaining`);
+        this.messageHandlers.get("SESSION_DETAILS")?.(data);
+      }
       return;
     }
     console.log("Unhandled WebSocket message:", data);
