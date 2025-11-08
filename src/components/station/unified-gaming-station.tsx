@@ -213,6 +213,15 @@ useEffect(() => {
   };
 }, []);
 
+  // Send USER_LOGIN via WebSocket when user logs in
+  useEffect(() => {
+    if (authUser && wsRef.current) {
+      const stationId = wsRef.current.getStationId();
+      console.log(`📤 Sending USER_LOGIN via WebSocket | User: ${authUser.id} | Station: ${stationId}`);
+      wsRef.current.sendUserLogin(authUser.id.toString(), authUser.username);
+    }
+  }, [authUser]);
+
   // Real-time timer that counts down every second
   useEffect(() => {
     const timer = setInterval(() => {

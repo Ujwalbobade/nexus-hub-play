@@ -17,6 +17,8 @@ const Index = () => {
       fullName: identifier,
       phoneNumber: null,
     }
+    
+    // Store user in auth context
     loginUser({ token: "mock-token", user: mockUser })
   }
 

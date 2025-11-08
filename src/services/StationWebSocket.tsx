@@ -50,14 +50,12 @@ export class StationWebSocket {
     if (this.isReconnecting) return;
 
     try {
-      // ✅ Fetch real station data first
-      const station = await getStationFromMac(config.macAddress);
-      this.stationId = station.id.toString();
-      this.stationName = station.name;
+      // ✅ Use station ID directly from config
+      this.stationId = config.stationId || "7";
+      
+      console.log(`✅ Connecting to WebSocket with Station ID: ${this.stationId}`);
 
-      console.log(`✅ Station resolved via MAC: ${this.stationName} (ID: ${this.stationId})`);
-
-      // ✅ Create WebSocket only after we have real stationId
+      // ✅ Create WebSocket connection
       const wsUrl = `ws://localhost:8087/ws/station?stationId=${this.stationId}`;
       this.ws = new WebSocket(wsUrl);
 
@@ -91,7 +89,11 @@ export class StationWebSocket {
         this.ws?.close();
       };
     } catch (error) {
-      console.error("❌ Failed to resolve station from MAC:", error);
+      console.error("❌ Failed to connect WebSocket:", error);
+      setTimeout(() => {
+        this.isReconnecting = false;
+        this.connect();
+      }, this.reconnectInterval);
     }
   }
 
