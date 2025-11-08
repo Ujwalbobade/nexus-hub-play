@@ -174,8 +174,10 @@ export class StationWebSocket {
     switch (type || command || action) {
       case "STATION_REGISTER":
       case "STATION_REGISTERED":
+      case "SESSION_DETAILS":
         console.log(`✅ Station ${data.stationId} registered successfully with session ${data.sessionId}`);
         this.messageHandlers.get("STATION_REGISTERED")?.(data);
+        this.messageHandlers.get("SESSION_DETAILS")?.(data);
         return;
 
       case "COMMAND":

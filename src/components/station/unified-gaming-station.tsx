@@ -193,6 +193,17 @@ useEffect(() => {
     console.log(`✅ Station ${data.stationId} registered successfully with session ${data.sessionId}`);
   });
 
+  ws.on("SESSION_DETAILS", (data: StationMessage) => {
+    const timeRemaining = data.timeRemaining ?? 0;
+    const sessionId = data.sessionId;
+    console.log(`📋 Session details received | Session: ${sessionId} | Time: ${timeRemaining} min`);
+    
+    // Convert minutes to seconds and set time
+    setTimeLeft(timeRemaining * 60);
+    
+    toast.success(`Session ${data.message || 'loaded'} - ${timeRemaining} minutes available`);
+  });
+
   return () => {
     ws.disconnect();
   };
