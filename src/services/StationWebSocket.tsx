@@ -28,10 +28,7 @@ export type StationMessage = {
 timeRemaining?: number;
 };
 
-import { timePacks } from "@/components/station/data";
 import config from "../../public/stationconfig.json";
-import { getStationFromMac } from "./api";
-import { TimePacksTab } from "@/components/station/tabs/TimePacksTab";
 
 export class StationWebSocket {
   public getStationId() {

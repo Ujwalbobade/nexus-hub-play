@@ -159,6 +159,10 @@ useEffect(() => {
     setTimeout(() => window.location.reload(), 3000);
   });
 
+  ws.on("USER_LOGIN", (data: StationMessage) => {
+    console.log(`✅ User ${data.userId} logged in at station ${data.stationId}`);
+  });
+
   ws.on("STATION_REGISTERED", (data: StationMessage) => {
     const sessionId = data.sessionId;
     // Fetch session to get initial time
