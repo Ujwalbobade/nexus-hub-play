@@ -82,21 +82,26 @@ const getToken = async (): Promise<string | null> => {
 
 
 // auth-api.ts
-const API_BASE = "http://localhost:8087/api/auth/client";
-
 export const login = async (username: string, password: string) => {
-  const res = await fetch(`${API_BASE}/login`, {
+  const res = await fetch(`${API_BASE_URL}/auth/client/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
 
   if (!res.ok) throw new Error("Invalid credentials");
-  return res.json(); // { token, role, user }
+  const data = await res.json(); // { token, role, user }
+  
+  // Store token immediately for subsequent requests
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+  }
+  
+  return data;
 };
 
 export const register = async (username: string, email: string, password: string) => {
-  const res = await fetch(`${API_BASE}/register`, {
+  const res = await fetch(`${API_BASE_URL}/auth/client/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, email, password }),
@@ -110,7 +115,7 @@ export const register = async (username: string, email: string, password: string
 };
 
 export const forgotPassword = async (email: string) => {
-  const res = await fetch(`${API_BASE}/forgot-password`, {
+  const res = await fetch(`${API_BASE_URL}/auth/client/forgot-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -136,11 +141,7 @@ export async function createTimeRequest(
 }
 
 export async function fetchTimeRequests(sessionId: number) {
-  const res = await fetch(`${API_BASE}/Session/TimeRequests/${sessionId}`);
-  if (!res.ok) {
-    throw new Error("Failed to fetch time requests");
-  }
-  return await res.json();
+  return await apiFetch(`/auth/client/Session/TimeRequests/${sessionId}`);
 }
 
 export async function fetchSession(sessionId: number) {
