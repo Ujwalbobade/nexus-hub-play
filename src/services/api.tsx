@@ -125,6 +125,37 @@ export const forgotPassword = async (email: string) => {
   return res.json();
 };
 
+export const validateResetToken = async (token: string) => {
+  const res = await fetch(`${API_BASE_URL}/auth/client/validate-reset-token?token=${encodeURIComponent(token)}`);
+  if (!res.ok) throw new Error("Failed to validate token");
+  return res.json();
+};
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  const res = await fetch(`${API_BASE_URL}/auth/client/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, newPassword }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || "Password reset failed");
+  }
+  return res.json();
+};
+
+export const forgotUsername = async (email: string) => {
+  const res = await fetch(`${API_BASE_URL}/auth/client/forgot-username`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) throw new Error("Request failed");
+  return res.json();
+};
+
 //----------------- TIME REQUESTS API -----------------
 // Create a time request using generic apiFetch for authentication and error handling
 export async function createTimeRequest(

@@ -3,9 +3,10 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Gamepad2, User, Lock, Eye, EyeOff, Mail } from "lucide-react"
+import { Gamepad2, User, Lock, Eye, EyeOff, Mail, ArrowLeft } from "lucide-react"
 import { z } from "zod"
 import { toast } from "sonner"
+import { forgotPassword } from "@/services/api"
 
 const loginSchema = z.object({
   identifier: z.string().trim().min(1, "Username or email is required").max(100),
@@ -25,6 +26,7 @@ interface LoginScreenProps {
 
 export function LoginScreen({ onLogin, onRegister }: LoginScreenProps) {
   const [isRegistering, setIsRegistering] = useState(false)
+  const [isForgotPassword, setIsForgotPassword] = useState(false)
   const [identifier, setIdentifier] = useState("")
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
@@ -73,6 +75,29 @@ export function LoginScreen({ onLogin, onRegister }: LoginScreenProps) {
     }
   }
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    
+    try {
+      const emailSchema = z.string().email("Invalid email address")
+      emailSchema.parse(email)
+      
+      const response = await forgotPassword(email)
+      toast.success(response.message || "Password reset link sent to your email")
+      setIsForgotPassword(false)
+      setEmail("")
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message)
+      } else {
+        toast.error(error instanceof Error ? error.message : "Failed to send reset link")
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-ps5-black via-ps5-surface to-ps5-card flex items-center justify-center p-4 md:p-6">
       <div className="w-full max-w-md space-y-6 md:space-y-8">
@@ -89,7 +114,59 @@ export function LoginScreen({ onLogin, onRegister }: LoginScreenProps) {
 
         {/* Auth Form */}
         <Card className="bg-ps5-card/80 backdrop-blur-sm border-ps5-secondary/30 p-6 md:p-8 shadow-2xl">
-          {!isRegistering ? (
+          {isForgotPassword ? (
+            /* Forgot Password Form */
+            <div className="space-y-5 md:space-y-6">
+              <div className="flex items-center gap-2 mb-4">
+                <button
+                  onClick={() => setIsForgotPassword(false)}
+                  className="text-ps5-white/70 hover:text-ps5-accent transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h2 className="text-lg md:text-xl font-semibold text-ps5-white">Reset Password</h2>
+              </div>
+              
+              <p className="text-sm text-ps5-white/70">
+                Enter your email address and we'll send you a link to reset your password.
+              </p>
+
+              <form onSubmit={handleForgotPassword} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="reset-email" className="text-ps5-white/90 text-sm md:text-base">
+                    Email Address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
+                    <Input
+                      id="reset-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="pl-10 md:pl-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isLoading || !email}
+                  className="w-full bg-ps5-accent hover:bg-ps5-accent/90 text-white font-medium py-2.5 md:py-3 text-sm md:text-base shadow-lg hover:shadow-[0_8px_30px_hsl(0_112%_60%_/_0.3)] transition-all duration-200"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Sending...
+                    </div>
+                  ) : (
+                    "Send Reset Link"
+                  )}
+                </Button>
+              </form>
+            </div>
+          ) : !isRegistering ? (
             /* Login Form */
             <form onSubmit={handleLoginSubmit} className="space-y-5 md:space-y-6">
               <div className="space-y-2">
@@ -153,6 +230,17 @@ export function LoginScreen({ onLogin, onRegister }: LoginScreenProps) {
                   "Sign In"
                 )}
               </Button>
+
+              {/* Forgot Password Link */}
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(true)}
+                  className="text-xs md:text-sm text-ps5-white/70 hover:text-ps5-accent transition-colors"
+                >
+                  Forgot password?
+                </button>
+              </div>
 
               <div className="relative my-5 md:my-6">
                 <div className="absolute inset-0 flex items-center">
