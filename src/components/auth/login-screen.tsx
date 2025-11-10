@@ -3,24 +3,62 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Gamepad2, User, Lock, Eye, EyeOff } from "lucide-react"
+import { Gamepad2, User, Lock, Eye, EyeOff, Mail } from "lucide-react"
+import { z } from "zod"
+import { toast } from "sonner"
+
+const loginSchema = z.object({
+  identifier: z.string().trim().min(1, "Username or email is required").max(100),
+  password: z.string().min(1, "Password is required").max(100)
+})
+
+const registerSchema = z.object({
+  username: z.string().trim().min(3, "Username must be at least 3 characters").max(50).regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+  email: z.string().trim().email("Invalid email address").max(255),
+  password: z.string().min(6, "Password must be at least 6 characters").max(100)
+})
 
 interface LoginScreenProps {
   onLogin: (identifier: string, password: string) => void
+  onRegister: (username: string, email: string, password: string) => void
 }
 
-export function LoginScreen({ onLogin }: LoginScreenProps) {
+export function LoginScreen({ onLogin, onRegister }: LoginScreenProps) {
+  const [isRegistering, setIsRegistering] = useState(false)
   const [identifier, setIdentifier] = useState("")
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     
     try {
-      onLogin(identifier, password)
+      const validated = loginSchema.parse({ identifier, password })
+      await onLogin(validated.identifier, validated.password)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message)
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    
+    try {
+      const validated = registerSchema.parse({ username, email, password })
+      await onRegister(validated.username, validated.email, validated.password)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -49,99 +87,189 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           </div>
         </div>
 
-        {/* Login Form */}
+        {/* Auth Form */}
         <Card className="bg-ps5-card/80 backdrop-blur-sm border-ps5-secondary/30 p-6 md:p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
-            {/* Identifier Field */}
-            <div className="space-y-2">
-              <Label htmlFor="identifier" className="text-ps5-white/90 text-sm md:text-base">
-                Username or Email
-              </Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
-                <Input
-                  id="identifier"
-                  type="text"
-                  placeholder="Enter your username or email"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  className="pl-10 md:pl-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-ps5-white/90 text-sm md:text-base">
-                Password
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 md:pl-12 pr-10 md:pr-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 hover:text-ps5-accent transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4 md:w-5 md:h-5" />
-                  ) : (
-                    <Eye className="w-4 h-4 md:w-5 md:h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={isLoading || !identifier || !password}
-              className="w-full bg-ps5-accent hover:bg-ps5-accent/90 text-white font-medium py-2.5 md:py-3 text-sm md:text-base shadow-lg hover:shadow-[0_8px_30px_hsl(0_112%_60%_/_0.3)] transition-all duration-200"
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing In...
+          {!isRegistering ? (
+            /* Login Form */
+            <form onSubmit={handleLoginSubmit} className="space-y-5 md:space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="identifier" className="text-ps5-white/90 text-sm md:text-base">
+                  Username or Email
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
+                  <Input
+                    id="identifier"
+                    type="text"
+                    placeholder="Enter your username or email"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    className="pl-10 md:pl-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
+                    required
+                  />
                 </div>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
-
-            {/* Divider */}
-            <div className="relative my-5 md:my-6">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-ps5-secondary/30" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-ps5-card px-3 text-ps5-white/50">Or</span>
-              </div>
-            </div>
 
-            {/* Guest Login */}
-            <Button
-              type="button"
-              onClick={handleGuestLogin}
-              disabled={isLoading}
-              variant="outline"
-              className="w-full border-ps5-secondary/50 text-ps5-white hover:bg-ps5-surface/50 hover:border-ps5-accent/50 text-sm md:text-base"
+              <div className="space-y-2">
+                <Label htmlFor="login-password" className="text-ps5-white/90 text-sm md:text-base">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
+                  <Input
+                    id="login-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 md:pl-12 pr-10 md:pr-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 hover:text-ps5-accent transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 md:w-5 md:h-5" />
+                    ) : (
+                      <Eye className="w-4 h-4 md:w-5 md:h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isLoading || !identifier || !password}
+                className="w-full bg-ps5-accent hover:bg-ps5-accent/90 text-white font-medium py-2.5 md:py-3 text-sm md:text-base shadow-lg hover:shadow-[0_8px_30px_hsl(0_112%_60%_/_0.3)] transition-all duration-200"
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Signing In...
+                  </div>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+
+              <div className="relative my-5 md:my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-ps5-secondary/30" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-ps5-card px-3 text-ps5-white/50">Or</span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                onClick={handleGuestLogin}
+                disabled={isLoading}
+                variant="outline"
+                className="w-full border-ps5-secondary/50 text-ps5-white hover:bg-ps5-surface/50 hover:border-ps5-accent/50 text-sm md:text-base"
+              >
+                Continue as Guest
+              </Button>
+            </form>
+          ) : (
+            /* Register Form */
+            <form onSubmit={handleRegisterSubmit} className="space-y-5 md:space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-ps5-white/90 text-sm md:text-base">
+                  Username
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="Choose a username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="pl-10 md:pl-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-ps5-white/90 text-sm md:text-base">
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 md:pl-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="register-password" className="text-ps5-white/90 text-sm md:text-base">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 w-4 h-4 md:w-5 md:h-5" />
+                  <Input
+                    id="register-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password (min 6 characters)"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 md:pl-12 pr-10 md:pr-12 bg-ps5-surface border-ps5-secondary/50 text-ps5-white placeholder-ps5-white/50 focus:border-ps5-accent text-sm md:text-base"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-ps5-white/50 hover:text-ps5-accent transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 md:w-5 md:h-5" />
+                    ) : (
+                      <Eye className="w-4 h-4 md:w-5 md:h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isLoading || !username || !email || !password}
+                className="w-full bg-ps5-accent hover:bg-ps5-accent/90 text-white font-medium py-2.5 md:py-3 text-sm md:text-base shadow-lg hover:shadow-[0_8px_30px_hsl(0_112%_60%_/_0.3)] transition-all duration-200"
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Creating Account...
+                  </div>
+                ) : (
+                  "Create Account"
+                )}
+              </Button>
+            </form>
+          )}
+
+          {/* Toggle between login/register */}
+          <div className="mt-5 md:mt-6 text-center">
+            <button
+              onClick={() => setIsRegistering(!isRegistering)}
+              className="text-xs md:text-sm text-ps5-white/70 hover:text-ps5-accent transition-colors"
             >
-              Continue as Guest
-            </Button>
-          </form>
-
-          {/* Footer */}
-          <div className="mt-5 md:mt-6 text-center text-xs md:text-sm text-ps5-white/50">
-            <p>Demo credentials: any username or email + password</p>
+              {isRegistering ? (
+                <>Already have an account? <span className="font-semibold">Sign In</span></>
+              ) : (
+                <>Don't have an account? <span className="font-semibold">Sign Up</span></>
+              )}
+            </button>
           </div>
         </Card>
 
