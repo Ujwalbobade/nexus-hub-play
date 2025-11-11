@@ -97,14 +97,9 @@ export default function UnifiedGamingStation({ onLogout }: { onLogout?: () => vo
 
   // Initialize WebSocket connection
 useEffect(() => {
-  // ✅ Create instance without hardcoded ID/name
-  //const ws = new StationWebSocket();
-  //wsRef.current = ws;
+  // Get singleton instance (already connected from login screen)
   const ws = StationWebSocket.getInstance();
   wsRef.current = ws;
-
-  // ✅ Connect (will auto-fetch correct station info from MAC via API)
-  //ws.connect();
 
   // --- Admin command handlers ---
   ws.on("TIME_APPROVED", (data: StationMessage) => {

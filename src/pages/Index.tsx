@@ -8,10 +8,6 @@ import { useEffect } from "react"
 
 const Index = () => {
   const { user, loginUser, logoutUser } = useAuth()
-  const Stationwebs = StationWebSocket.getInstance();
-  /*useEffect(() => {
-    Stationwebs.connect();
-  }, []);*/
 
   
   const handleLogin = async (identifier: string, password: string) => {
@@ -22,7 +18,10 @@ const Index = () => {
         user: response.user 
       })
       toast.success("Login successful!")
-      Stationwebs.sendUserLogin(response.user.id.toString(), response.user.username);
+      
+      // Send USER_LOGIN via WebSocket after successful login
+      const ws = StationWebSocket.getInstance();
+      ws.sendUserLogin(response.user.id.toString(), response.user.username);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Login failed")
       throw error

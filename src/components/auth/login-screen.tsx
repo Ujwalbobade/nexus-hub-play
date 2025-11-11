@@ -38,21 +38,17 @@ export function LoginScreen({ onLogin, onRegister }: LoginScreenProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-  const stationWS = StationWebSocket.getInstance();
-  stationWS.connect();
+    const stationWS = StationWebSocket.getInstance();
+    stationWS.connect();
 
-  // Automatically send STATION_REGISTER once connected
-  const handleRegister = () => {
-    console.log("📡 Sending STATION_REGISTER message on login screen load");
-    stationWS.send({ action: "STATION_REGISTER", stationId: stationWS.getStationId() });
-  };
+    stationWS.on("STATION_REGISTERED", (data) => {
+      console.log("✅ Station registered successfully on login screen:", data);
+    });
 
-  stationWS.on("STATION_REGISTERED", (data) => {
-    console.log("✅ Station registered successfully:", data);
-  });
-
-
-}, []);
+    return () => {
+      // Don't disconnect - keep WebSocket alive for gaming station
+    };
+  }, []);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
