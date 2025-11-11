@@ -198,17 +198,25 @@ useEffect(() => {
   });
 
   ws.on("SESSION_DETAILS", (data: StationMessage) => {
-    const remainingTime = (data as any).remainingTime ?? 0;
-    const sessionId = data.sessionId;
-    const status = (data as any).status;
+    // Extract nested data from backend response
+    const payload = (data.data as any) || data;
+    const sessionId = payload.sessionId;
+    const timeRemaining = payload.timeRemaining ?? 0;
+    const status = payload.status;
+    const message = payload.message;
     
-    console.log(`📋 Session details received | Session: ${sessionId} | Time: ${remainingTime} min | Status: ${status}`);
+    console.log(`📋 Session details received | Session: ${sessionId} | Time: ${timeRemaining} min | Status: ${status} | Message: ${message}`);
+    
+    // Save sessionId to localStorage
+    if (sessionId) {
+      localStorage.setItem("currentSessionId", sessionId.toString());
+    }
     
     // Convert minutes to seconds and set time
-    setTimeLeft(remainingTime * 60);
+    setTimeLeft(timeRemaining * 60);
     
-    if (status === "ACTIVE") {
-      toast.success(`Session resumed - ${remainingTime} minutes available`);
+    if (status && message !== 'Started new session') {
+      toast.success(`Session resumed - ${timeRemaining} minutes available`);
     }
   });
 
