@@ -7,6 +7,8 @@ import { Gamepad2, User, Lock, Eye, EyeOff, Mail, ArrowLeft } from "lucide-react
 import { z } from "zod"
 import { toast } from "sonner"
 import { forgotPassword } from "@/services/api"
+import { StationWebSocket } from "@/services/StationWebSocket"
+import { useEffect } from "react"
 
 const loginSchema = z.object({
   identifier: z.string().trim().min(1, "Username or email is required").max(100),
@@ -24,6 +26,7 @@ interface LoginScreenProps {
   onRegister: (username: string, email: string, password: string) => void
 }
 
+
 export function LoginScreen({ onLogin, onRegister }: LoginScreenProps) {
   const [isRegistering, setIsRegistering] = useState(false)
   const [isForgotPassword, setIsForgotPassword] = useState(false)
@@ -33,6 +36,23 @@ export function LoginScreen({ onLogin, onRegister }: LoginScreenProps) {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+  const stationWS = StationWebSocket.getInstance();
+  stationWS.connect();
+
+  // Automatically send STATION_REGISTER once connected
+  const handleRegister = () => {
+    console.log("📡 Sending STATION_REGISTER message on login screen load");
+    stationWS.send({ action: "STATION_REGISTER", stationId: stationWS.getStationId() });
+  };
+
+  stationWS.on("STATION_REGISTERED", (data) => {
+    console.log("✅ Station registered successfully:", data);
+  });
+
+
+}, []);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

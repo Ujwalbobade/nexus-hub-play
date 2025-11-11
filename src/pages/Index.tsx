@@ -3,9 +3,16 @@ import UnifiedGamingStation from "@/components/station/unified-gaming-station"
 import { useAuth } from "@/contextProvider/AuthContext"
 import { login, register } from "@/services/api"
 import { toast } from "sonner"
+import { StationWebSocket} from "@/services/StationWebSocket"
+import { useEffect } from "react"
 
 const Index = () => {
   const { user, loginUser, logoutUser } = useAuth()
+  const Stationwebs = StationWebSocket.getInstance();
+  /*useEffect(() => {
+    Stationwebs.connect();
+  }, []);*/
+
   
   const handleLogin = async (identifier: string, password: string) => {
     try {
@@ -15,6 +22,7 @@ const Index = () => {
         user: response.user 
       })
       toast.success("Login successful!")
+      Stationwebs.sendUserLogin(response.user.id.toString(), response.user.username);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Login failed")
       throw error

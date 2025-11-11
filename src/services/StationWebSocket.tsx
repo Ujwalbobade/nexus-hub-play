@@ -31,9 +31,19 @@ timeRemaining?: number;
 import config from "../../public/stationconfig.json";
 
 export class StationWebSocket {
+  private static instance: StationWebSocket;
+
+  public static getInstance(): StationWebSocket {
+    if (!StationWebSocket.instance) {
+      StationWebSocket.instance = new StationWebSocket();
+    }
+    return StationWebSocket.instance;
+  }
+
   public getStationId() {
     return this.stationId;
   }
+
   private ws: WebSocket | null = null;
   private readonly url: string;
   private reconnectInterval = 5000;
