@@ -300,10 +300,12 @@ useEffect(() => {
     try {
       const stationId = wsRef.current?.getStationId?.();
       if (authUser?.id && stationId) {
-        // Notify backend with time remaining
-        await logoutUser(authUser.id, Number(stationId), sessionIdRaw || "", timeLeft);
-        // Send WebSocket logout with time remaining
-        wsRef.current?.sendUserLogout(authUser.id.toString(), sessionIdRaw || "", timeLeft);
+        // Convert seconds to minutes
+        const timeLeftInMinutes = Math.floor(timeLeft / 60);
+        // Notify backend with time remaining in minutes
+        await logoutUser(authUser.id, Number(stationId), sessionIdRaw || "", timeLeftInMinutes);
+        // Send WebSocket logout with time remaining in minutes
+        wsRef.current?.sendUserLogout(authUser.id.toString(), sessionIdRaw || "", timeLeftInMinutes);
       }
     } catch (err) {
       console.error("Logout error:", err);
