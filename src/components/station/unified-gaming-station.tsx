@@ -11,7 +11,7 @@ import { CoinsTab } from "./tabs/CoinsTab"
 import { ArcadeTab } from "./tabs/ArcadeTab"
 import { AppsTab } from "./tabs/AppsTab"
 import { FoodTab } from "./tabs/FoodTab"
-import { gameData, timePacks, coinPacks } from "./data"
+import { gameData, timePacks } from "./data"
 import { Platform, ActiveTab, User, Game } from "./types"
 import { StationWebSocket, StationMessage } from "@/services/StationWebSocket"
 import { createTimeRequest, fetchTimeRequests, fetchSession, logoutUser } from "@/services/api"
@@ -301,9 +301,9 @@ useEffect(() => {
       const stationId = wsRef.current?.getStationId?.();
       if (authUser?.id && stationId) {
         // Notify backend
-        await logoutUser(authUser.id, Number(stationId));
+        await logoutUser(authUser.id, Number(stationId),sessionIdRaw || "");
         // Send WebSocket logout
-        wsRef.current?.sendUserLogout(authUser.id.toString(), sessionIdRaw || "");
+        wsRef.current?.sendUserLogout(authUser.id.toString(), sessionIdRaw || "",timeLeft);
       }
     } catch (err) {
       console.error("Logout error:", err);
