@@ -218,9 +218,8 @@ useEffect(() => {
     }
   });
 
-  return () => {
-    ws.disconnect();
-  };
+  // Don't disconnect on cleanup - station should stay connected
+  return () => {};
 }, []);
 
   // Send USER_LOGIN via WebSocket when user logs in
