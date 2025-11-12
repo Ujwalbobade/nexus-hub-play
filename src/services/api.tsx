@@ -201,9 +201,9 @@ export async function getStationFromMac(mac: string) {
 }
 
 // ----------------- LOGOUT API -----------------
-export async function logoutUser(userId: number, stationId: number,sessionId:string) {
+export async function logoutUser(userId: number, stationId: number, sessionId: string, timeLeft: number) {
   return await apiFetch("/auth/client/logout", {
     method: "POST",
-    body: JSON.stringify({ userId, stationId ,sessionId}),
+    body: JSON.stringify({ userId, stationId, sessionId, timeLeft }),
   });
 }
