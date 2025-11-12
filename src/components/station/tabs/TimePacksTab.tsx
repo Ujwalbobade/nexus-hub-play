@@ -19,7 +19,7 @@ export function TimePacksTab({ onPurchase, userId, sessionId }: TimePacksTabProp
 
   // Fetch all time requests
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (!sessionId) return
     ;(async () => {
       try {
@@ -29,7 +29,7 @@ export function TimePacksTab({ onPurchase, userId, sessionId }: TimePacksTabProp
         console.error("Failed to fetch time requests:", err)
       }
     })()
-  }, [sessionId])
+  }, [sessionId])*/
 
   
 

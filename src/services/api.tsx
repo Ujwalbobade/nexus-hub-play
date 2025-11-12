@@ -176,6 +176,9 @@ export async function fetchTimeRequests(sessionId: number) {
 }
 
 export async function fetchSession(sessionId: number) {
+  if (!sessionId || isNaN(sessionId)) {
+    throw new Error(`Invalid sessionId: ${sessionId}`);
+  }
   return await apiFetch(`/auth/client/Session/${sessionId}`);
 }
 export async function getStationFromMac(mac: string) {

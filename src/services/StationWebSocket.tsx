@@ -124,12 +124,13 @@ export class StationWebSocket {
     });
   }
 
-  sendUserLogout(userId: string) {
+  sendUserLogout(userId: string, sessionId: string) {
     this.send({
       action: "USER_LOGOUT",
       stationId: this.stationId,
       userId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      sessionId,
     });
   }
 

@@ -302,7 +302,7 @@ useEffect(() => {
         // Notify backend
         await logoutUser(authUser.id, Number(stationId));
         // Send WebSocket logout
-        wsRef.current?.sendUserLogout(authUser.id.toString());
+        wsRef.current?.sendUserLogout(authUser.id.toString(), sessionIdRaw || "");
       }
     } catch (err) {
       console.error("Logout error:", err);
